@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import ProposalCard from "../../../Components/TalentComponents/ProposalCard/ProposalCard";
 import { useEffect } from "react";
 import { auth, db } from "../../../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function Proposals() {
 
@@ -12,23 +13,22 @@ export default function Proposals() {
   const [talentData, setTalentData] = useState({ active: [], submited: [] });
 
   useEffect(async () => {
-    await db.collection("talent")
-      .doc(auth.currentUser.uid)
-      .collection("jobProposal")
-      .get()
-      .then(res => {
-        res.docs.map(proposal => {
-          if (proposal.exists) {
-            if (proposal.data().status === "contract") {
-              talentData.active.push(proposal.data());
-            } else {
-              talentData.submited.push(proposal.data());
-            }
-          }
-        });
-        setTalentData({ active: [...talentData.active], submited: [...talentData.submited] });
-      });
-    console.log(talentData);
+    const proposalsRef = collection(db, "talent", auth.currentUser.uid, "jobProposal");
+    const querySnapshot = await getDocs(proposalsRef);
+    const active = [];
+    const submited = [];
+    
+    querySnapshot.forEach(proposal => {
+      if (proposal.exists()) {
+        if (proposal.data().status === "contract") {
+          active.push(proposal.data());
+        } else {
+          submited.push(proposal.data());
+        }
+      }
+    });
+    setTalentData({ active, submited });
+    console.log({ active, submited });
   }, []);
 
   return (

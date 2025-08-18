@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Loader from "../../../Components/SharedComponents/Loader/Loader"
 import { auth, db } from "../../../firebase"
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import OfferCard from "./OfferCard";
 
 export default function Offers() {
@@ -13,28 +14,27 @@ export default function Offers() {
         getOffers();
     }, [])
 
-    const getOffers = () => {
-        db.collection("talent")
-            .doc(auth.currentUser.uid)
-            .collection("jobProposal")
-            .where("status", "==", "offer")
-            .onSnapshot(res => {
-                const arr = [];
-                if (res.docs.length > 0) {
-                    res.docs.map(async doc => {
-                        await db.collection("job")
-                            .doc(doc.data().jobId)
-                            .get().then(doc => {
-                                if (doc.exists) {
-                                    arr.push(doc.data());
-                                }
-                            })
-                        setJobs([...arr]);
-                    });
-                } else {
-                    setJobs([...arr]);
+    const getOffers = async () => {
+        const q = query(
+            collection(db, "talent", auth.currentUser.uid, "jobProposal"),
+            where("status", "==", "offer")
+        );
+        
+        onSnapshot(q, async res => {
+            const arr = [];
+            if (res.docs.length > 0) {
+                for (const doc of res.docs) {
+                    const jobRef = doc(db, "job", doc.data().jobId);
+                    const jobDoc = await getDoc(jobRef);
+                    if (jobDoc.exists()) {
+                        arr.push(jobDoc.data());
+                    }
                 }
-            })
+                setJobs([...arr]);
+            } else {
+                setJobs([...arr]);
+            }
+        });
     }
 
     return (

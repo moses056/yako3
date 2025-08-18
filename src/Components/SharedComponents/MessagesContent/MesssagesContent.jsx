@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { auth, db } from "../../../firebase";
 import IncomeMsg from "./IncomeMsg";
 import OutgoingMsg from "./OutgoingMsg";
-import { serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 let unSubscribe;
 
 export default function MesssagesContent() {
@@ -20,7 +20,7 @@ export default function MesssagesContent() {
   }, []);
 
   const getMsgs = () => {
-    unSubscribe = db.doc("messages/IpWoNPxWvjnEnXymHpY6").onSnapshot(Msgs => {
+    unSubscribe = onSnapshot(doc(db, "messages/IpWoNPxWvjnEnXymHpY6"), Msgs => {
       Msgs.data().messages && setMessages([...Msgs.data().messages]);
       el && (el.scrollTop = el.scrollHeight - el.clientHeight);
     });
@@ -31,8 +31,10 @@ export default function MesssagesContent() {
   }
 
   const sendMsg = () => {
-    db.doc("messages/IpWoNPxWvjnEnXymHpY6")
-      .update({ talentAuthID: auth.currentUser?.uid, messages: [...messages, { Msg: message, time: serverTimestamp(), uid: auth.currentUser?.uid }] })
+    updateDoc(doc(db, "messages/IpWoNPxWvjnEnXymHpY6"), { 
+      talentAuthID: auth.currentUser?.uid, 
+      messages: [...messages, { Msg: message, time: serverTimestamp(), uid: auth.currentUser?.uid }] 
+    })
       .then(() => {
         console.log("sent message")
         getMsgs();

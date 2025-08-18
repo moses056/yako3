@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { db } from "../../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import JobDescriptionJobDetails from "../../../Components/TalentComponents/JobDescriptionJobDetails/JobDescriptionJobDetails";
 import RightSidebarJobDetails from "../../../Components/TalentComponents/RightSidebarJobDetails/RightSidebarJobDetails";
 
@@ -11,9 +12,8 @@ export default function JobAppliedDetails() {
   const [jobData, setJobData] = useState({});
 
   useEffect(() => {
-    db.collection("job")
-      .doc(id)
-      .get()
+    const docRef = doc(db, "job", id);
+    getDoc(docRef)
       .then((res) => {
         setJobData(res.data());
       });

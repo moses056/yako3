@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import StarsRating from "../../../Components/SharedComponents/StarsRating/StarsRating";
 import { db } from "../../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function OneContract({ contract, ind }) {
     console.log(contract);
@@ -11,17 +12,15 @@ export default function OneContract({ contract, ind }) {
     const [talent, setTalent] = useState();
 
     useEffect(() => {
-        db.collection("job")
-            .doc(contract.jobID)
-            .get().then(job => {
-                if (job.exists) {
-                    setJob(job.data());
-                }
-            })
+        const jobRef = doc(db, "job", contract.jobID);
+        getDoc(jobRef).then(job => {
+            if (job.exists()) {
+                setJob(job.data());
+            }
+        })
 
-        db.collection("talent")
-            .doc(contract?.talentID)
-            .get().then(doc => setTalent(doc.data()))
+        const talentRef = doc(db, "talent", contract?.talentID);
+        getDoc(talentRef).then(doc => setTalent(doc.data()));
 
 
     }, []);

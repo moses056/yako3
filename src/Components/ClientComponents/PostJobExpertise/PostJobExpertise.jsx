@@ -4,7 +4,7 @@ import { updateJob } from "../../../Network/Network";
 import "./PostJobExpertise.css";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobExpertise({ setBtns, btns }) {
+export default function PostJobExpertise({ completeStep, completedSteps }) {
 
   const [inputVal, setInputVal] = useState("");
   const [skillsList, setSkillsList] = useState([]);
@@ -34,11 +34,19 @@ export default function PostJobExpertise({ setBtns, btns }) {
     console.log(skillsList);
   };
 
-  const addData = () => {
+  const addData = (e) => {
+    e.preventDefault(); // Empêche la navigation immédiate
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob({ skills: job.skills, jobExperienceLevel: job.jobExperienceLevel, jobExperienceLevelAr: job.jobExperienceLevel === "expert" ? "خبير" : job.jobExperienceLevel === "intermediate" ? "متوسط" : "مبتدئ" }, id);
-    setBtns({ ...btns, visibility: false });
+    updateJob({ skills: job.skills, jobExperienceLevel: job.jobExperienceLevel, jobExperienceLevelAr: job.jobExperienceLevel === "expert" ? "خبير" : job.jobExperienceLevel === "intermediate" ? "متوسط" : "مبتدئ" }, id)
+      .then(() => {
+        completeStep('expertise');
+        // Navigation manuelle après la completion de l'étape
+        window.location.href = "/post-job/visibility";
+      })
+      .catch((error) => {
+        console.error("Error updating job:", error);
+      });
   };
 
   return (
@@ -133,7 +141,7 @@ export default function PostJobExpertise({ setBtns, btns }) {
           >
             <Link
               className="btn bg-upwork px-5"
-              to="/post-job/visibility"
+              to="#"
               onClick={addData}
             >
               {t("Next")}

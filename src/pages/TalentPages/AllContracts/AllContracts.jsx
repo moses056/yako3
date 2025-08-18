@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import OneContract from "../../../Components/TalentComponents/OneContract/OneContract";
 import { useTranslation } from "react-i18next";
 import { auth, db } from "../../../firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export default function AllContracts() {
 
@@ -11,19 +12,20 @@ export default function AllContracts() {
   const [contracts, setContracts] = useState([]);
 
   useEffect(() => {
-    db.collection("talent")
-      .doc(auth.currentUser.uid)
-      .collection("jobProposal")
-      .where("status", "==", "contract")
-      .onSnapshot(res => {
-        const arr = [];
-        res.docs.map(contract => {
-          if (contract.exists) {
-            arr.push(contract.data());
-          }
-        });
-        setContracts([...arr]);
+    const q = query(
+      collection(db, "talent", auth.currentUser.uid, "jobProposal"),
+      where("status", "==", "contract")
+    );
+    
+    onSnapshot(q, res => {
+      const arr = [];
+      res.docs.forEach(contract => {
+        if (contract.exists()) {
+          arr.push(contract.data());
+        }
       });
+      setContracts([...arr]);
+    });
   }, []);
 
   return (

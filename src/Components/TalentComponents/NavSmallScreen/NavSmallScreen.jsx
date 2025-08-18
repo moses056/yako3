@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import HeaderSearchSm from "../../SharedComponents/HeaderSearchSm/HeaderSearchSm";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import firebaseApp, { auth } from "../../../firebase";
+import { auth } from "../../../firebase";
+import { signOut } from "firebase/auth";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import img from "../../../assets/Img/icon-user.svg";
@@ -21,9 +22,7 @@ export default function NavSmallScreen() {
   }, []);
 
   const logout = () => {
-    firebaseApp
-      .auth()
-      .signOut()
+    signOut(auth)
       .then((res) => {
         console.log(res);
         navigate("/login");

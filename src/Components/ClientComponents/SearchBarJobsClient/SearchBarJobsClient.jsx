@@ -1,5 +1,6 @@
 import React, { useContext, useEffect} from "react";
 import  { db } from "../../../firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SearchContext } from "../../../Context/SearchContext";
@@ -18,23 +19,22 @@ useEffect(() => {
 }, [talentSearchList])
 const searchDatabase = () => {
   let tempArr = [];
-db.collection('talent')
-  .where('firstName', '==', talentSearchList)
-  .onSnapshot(
-    jobs => jobs.docs.map(
-      item => {
-        tempArr.navigate(item.data())
-        if (talentSearchList != "") {
-          settalentArr([...tempArr])
-          navigate({pathname:"/talent/searchclient"})
+  const q = query(collection(db, 'talent'), where('firstName', '==', talentSearchList));
+  
+  onSnapshot(q, (querySnapshot) => {
+    querySnapshot.docs.forEach((item) => {
+      tempArr.push(item.data());
+      if (talentSearchList != "") {
+        settalentArr([...tempArr]);
+        navigate({pathname:"/talent/searchclient"});
       }
-
-  })
-      )
-  if(tempArr.length<=0){
-      settalentArr(null)
-    navigate('/talent/searchclient')
-  }
+    });
+    
+    if(tempArr.length <= 0){
+      settalentArr(null);
+      navigate('/talent/searchclient');
+    }
+  });
 }
 
 

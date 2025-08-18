@@ -6,7 +6,7 @@ import upwork from "../../../assets/Img/TLpZ1jf.png";
 import { updateJob } from "../../../Network/Network";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobVisibility({ setBtns, btns }) {
+export default function PostJobVisibility({ completeStep, completedSteps }) {
   const [job, setJob] = useState({ jobVisibility: "", freelancerNeed: "" });
   const { t } = useTranslation();
 
@@ -32,7 +32,7 @@ export default function PostJobVisibility({ setBtns, btns }) {
     const id = localStorage.getItem("docID");
     console.log(id);
     updateJob({ jobVisibility: job.jobVisibility, jobVisibilityAr: job.jobVisibility === "anyone" ? "أى شخص" : job.jobVisibility === "invite only" ? "دعوة فقط" : "مستخدم أبورك فقط", freelancerNeed: job.freelancerNeed, freelancerNeedAr: job.freelancerNeed === "one freelancer" ? "مستقل واحد" : "أكثر من مستقل" }, id);
-    setBtns({ ...btns, budget: false });
+    completeStep('visibility');
   };
 
   return (

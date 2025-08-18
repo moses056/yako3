@@ -3,6 +3,7 @@
 
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default function JobPostLi({ job, id, index }) {
 
@@ -69,7 +70,10 @@ export default function JobPostLi({ job, id, index }) {
                               </Link>
             </li>
             <li>
-              <button className="dropdown-item" onClick={() => { db.collection("job").doc(job?.jobID).update({ status: "private" }) }} >
+              <button className="dropdown-item" onClick={() => { 
+                const docRef = doc(db, "job", job?.jobID);
+                updateDoc(docRef, { status: "private" }) 
+              }} >
                 Make Private
                               </button>
             </li>
@@ -81,7 +85,10 @@ export default function JobPostLi({ job, id, index }) {
             </li>
 
             <li>
-              <button className="dropdown-item" onClick={() => { db.collection("job").doc(job?.jobID).delete() }}>
+              <button className="dropdown-item" onClick={() => { 
+                const docRef = doc(db, "job", job?.jobID);
+                deleteDoc(docRef) 
+              }}>
                 Remove posting
                               </button>
             </li>

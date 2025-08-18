@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import firebaseApp from "../../../firebase";
+import { auth } from "../../../firebase";
+import { signOut } from "firebase/auth";
 import LanguageList from "../../SharedComponents/LanguageBtn/LanguageList";
 import img from "../../../assets/Img/icon-user.svg";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,9 +20,7 @@ export default function NavLargScreen() {
   }, []);
 
   const logout = () => {
-    firebaseApp
-      .auth()
-      .signOut()
+    signOut(auth)
       .then((res) => {
         console.log(res);
         navigate("/login");

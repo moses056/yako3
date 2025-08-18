@@ -1,13 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase";
 import { updateJob } from "../../../Network/Network";
 import "./PostJobDescription.css";
 
-export default function PostJobDescription({ setBtns, btns }) {
+export default function PostJobDescription({ completeStep, completedSteps }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   let [job, setJob] = useState({ jobDescription: "", jobImages: [] });
   const getData = (e) => {
     const val = e.target.value;
@@ -27,7 +28,7 @@ export default function PostJobDescription({ setBtns, btns }) {
             "state_changed",
             (snapshot) => { },
             (err) => {
-              console.log(err);
+              console.error(err);
             },
             () => {
               storage
@@ -38,6 +39,9 @@ export default function PostJobDescription({ setBtns, btns }) {
                   job.jobImages.push(url);
                   setJob({ ...job, jobImages: job.jobImages });
                   console.log(job);
+                })
+                .catch((error) => {
+                  console.error("Error getting download URL:", error);
                 });
             }
           );
@@ -49,14 +53,25 @@ export default function PostJobDescription({ setBtns, btns }) {
   };
 
   const addData = () => {
-    setJob(job.jobDescription);
-    console.log(job);
+    if (job.jobDescription.length < 50) {
+      alert("Description must be at least 50 characters long.");
+      return;
+    }
+    
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob(job, id);
-    setBtns({ ...btns, details: false });
+    if (id) {
+      updateJob(job, id)
+        .then(() => {
+          completeStep("details");
+          navigate("/post-job/details");
+        })
+        .catch((error) => {
+          console.error("Error updating job:", error);
+          alert("Failed to save job description. Please try again.");
+        });
+    }
   }
-
 
   return (
     <section className=" bg-white border rounded mt-3 pt-4">
@@ -103,8 +118,12 @@ export default function PostJobDescription({ setBtns, btns }) {
         <button className="btn">
           <Link className="btn border text-success me-4 px-5" to="/post-job/title">{t("Back")}</Link>
         </button>
-        <button className={`btn ${job.jobDescription === "" && "disabled"}`}>
-          <Link className="btn bg-upwork px-5" to="/post-job/details" onClick={addData}>{t("Next")}</Link>
+        <button 
+          className={`btn ${job.jobDescription === "" || job.jobDescription.length < 50 ? "disabled" : ""}`}
+          onClick={addData}
+          disabled={job.jobDescription === "" || job.jobDescription.length < 50}
+        >
+          <span className="btn bg-upwork px-5">{t("Next")}</span>
         </button>
       </div>
     </section>

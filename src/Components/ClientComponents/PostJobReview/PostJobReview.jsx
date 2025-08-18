@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { serverTimestamp, doc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db } from "../../../firebase";
 import { updateJob } from "../../../Network/Network";
@@ -11,6 +11,7 @@ import Loader from "../../SharedComponents/Loader/Loader";
 export default function PostJobReview() {
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [job, setJob] = useState(null);
 
@@ -18,23 +19,44 @@ export default function PostJobReview() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, "job", id), (doc) => {
-      setJob({ ...doc.data() });
-      console.log(job);
+      if (doc.exists()) {
+        setJob({ ...doc.data() });
+        console.log(job);
+      } else {
+        console.log("No such document!");
+        navigate("/post-job");
+      }
     });
     return unsubscribe;
-  }, []);
+  }, [id, navigate]);
 
   const publishJob = () => {
-    updateJob(
-      { postTime: serverTimestamp(), status: "public" },
-      id
-    );
-    localStorage.removeItem("docID");
+    if (id) {
+      updateJob(
+        { postTime: serverTimestamp(), status: "public" },
+        id
+      ).then(() => {
+        localStorage.removeItem("docID");
+        navigate("/");
+      }).catch((error) => {
+        console.error("Error publishing job:", error);
+        alert("Failed to publish job. Please try again.");
+      });
+    }
   };
 
   const deletePost = () => {
-    deleteDoc(doc(db, "job", id));
-    localStorage.removeItem("docID");
+    if (id) {
+      deleteDoc(doc(db, "job", id))
+        .then(() => {
+          localStorage.removeItem("docID");
+          navigate("/home");
+        })
+        .catch((error) => {
+          console.error("Error deleting job:", error);
+          alert("Failed to delete job. Please try again.");
+        });
+    }
   }
 
   return (
@@ -45,7 +67,12 @@ export default function PostJobReview() {
             <section className=" bg-white border rounded mt-3">
               <div className="ps-4 d-flex border-bottom justify-content-between align-items-center py-4">
                 <h4>{t("Review and post")}</h4>
-                <Link className="btn bg-upwork me-4 px-5" to="/" onClick={publishJob}>{t("Post Job Now")}</Link>
+                <button 
+                  className="btn bg-upwork me-4 px-5" 
+                  onClick={publishJob}
+                >
+                  {t("Post Job Now")}
+                </button>
               </div>
               <div className="px-4 mt-4">
                 <h5>{t("Title")}</h5>
@@ -126,8 +153,18 @@ export default function PostJobReview() {
 
             <section className="bg-white border rounded mt-4">
               <div className="ps-4 my-3 py-2">
-                <Link className="btn bg-upwork me-4 px-5" to="/" onClick={publishJob}>{t("Post Job Now")}</Link>
-                <Link className="btn border text-success px-5" to="/home" onClick={deletePost}>{t("Delete & Exit")}</Link>
+                <button 
+                  className="btn bg-upwork me-4 px-5" 
+                  onClick={publishJob}
+                >
+                  {t("Post Job Now")}
+                </button>
+                <button 
+                  className="btn border text-success px-5" 
+                  onClick={deletePost}
+                >
+                  {t("Delete & Exit")}
+                </button>
               </div>
             </section>
           </>

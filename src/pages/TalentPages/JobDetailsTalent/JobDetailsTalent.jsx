@@ -6,6 +6,7 @@ import RightSidebarJobDetails from "../../../Components/TalentComponents/RightSi
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { db } from "../../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import Loader from "../../../Components/SharedComponents/Loader/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { talentDataAction } from "../../../Store/actions/talentData";
@@ -20,7 +21,8 @@ export default function JobDetailsTalent() {
 
   useEffect(() => {
     dispatch(talentDataAction());
-    db.collection("job").doc(id).get().then(res => {
+    const docRef = doc(db, "job", id);
+    getDoc(docRef).then(res => {
       setJobData(res.data())
       console.log("sasa");
     })

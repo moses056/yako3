@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { db } from "../../../firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Loader from './../../SharedComponents/Loader/Loader';
 
@@ -11,11 +12,10 @@ export default function ProposalCard({ proposal, jobId, ind }) {
   const [jobData, setJobData] = useState({});
 
   useEffect(() => {
-    db.collection("job")
-      .doc(jobId)
-      .onSnapshot(doc => {
-        setJobData(doc.data());
-      });
+    const docRef = doc(db, "job", jobId);
+    onSnapshot(docRef, doc => {
+      setJobData(doc.data());
+    });
   }, []);
 
   return (

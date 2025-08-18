@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import StarsRating from "../../SharedComponents/StarsRating/StarsRating";
 
 export default function OneContract({ contract, ind }) {
@@ -12,26 +13,24 @@ export default function OneContract({ contract, ind }) {
   const [clientContract, setClientContract] = useState();
 
   useEffect(() => {
-    db.collection("job")
-      .doc(contract.jobId)
-      .get().then(job => {
-        if (job.exists) {
-          setJob(job.data());
+    const docRef = doc(db, "job", contract.jobId);
+    getDoc(docRef).then(job => {
+      if (job.exists()) {
+        setJob(job.data());
 
-          db.collection("client")
-            .doc(job?.data()?.authID)
-            .collection("contracts")
-            .where("jobID", "==", job.id)
-            .get().then(res => {
+        const q = query(
+          collection(db, "client", job.data().authID, "contracts"),
+          where("jobID", "==", job.id)
+        );
+        
+        getDocs(q).then(res => {
+          setClientContract(res.docs[0]?.data());
 
-              setClientContract(res.docs[0]?.data())
-
-              db.collection("client")
-                .doc(res.docs[0]?.data()?.clientID)
-                .get().then(doc => setClient(doc.data()))
-            })
-        }
-      });
+          const clientRef = doc(db, "client", res.docs[0]?.data()?.clientID);
+          getDoc(clientRef).then(doc => setClient(doc.data()));
+        });
+      }
+    });
     console.log(client);
   }, []);
 

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { talentDataAction } from "../../../Store/actions/talentData";
 import { updateUserData } from "../../../Network/Network";
 import JobProposalsNumber from "../SectionCenterTalentHome/JobProposalsNumber";
@@ -18,9 +19,8 @@ export default function SavedJobsJobComponent({ jobId , setisliked ,  isliked}) 
 
   useEffect(() => {
     dispatch(talentDataAction());
-    db.collection("job")
-      .doc(jobId)
-      .get()
+    const docRef = doc(db, "job", jobId);
+    getDoc(docRef)
       .then((res) => {
         setJobData(res.data());
       });

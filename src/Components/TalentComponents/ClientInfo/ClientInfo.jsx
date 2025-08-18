@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { db } from "../../../firebase";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import StarsRating from './../../SharedComponents/StarsRating/StarsRating';
 
 export default function ClientInfo({ clientID }) {
@@ -13,23 +14,23 @@ export default function ClientInfo({ clientID }) {
   const [clientJobs, setClientJobs] = useState({ closed: 0, hired: 0, public: 0, allJobs: 0 })
 
   useEffect(() => {
-    db.collection("client")
-      .doc(clientID)
-      .get().then(doc => setClient(doc.data()))
+    const docRef = doc(db, "client", clientID);
+    getDoc(docRef).then(doc => setClient(doc.data()));
 
-    clientID && db.collection("job")
-      .where("authID", "==", clientID)
-      .get().then(res => {
+    if (clientID) {
+      const q = query(collection(db, "job"), where("authID", "==", clientID));
+      getDocs(q).then(res => {
         const closed = [];
         const puplic = [];
         const hired = [];
-        res.docs.map(job => {
-          job.data().status === "public" && puplic.push(job.data())
-          job.data().status === "hired" && hired.push(job.data())
-          job.data().status === "closed" && closed.push(job.data())
-        })
-        setClientJobs({ allJobs: res.docs.length, hired: hired.length, public: puplic.length, closed: closed.length })
-      })
+        res.docs.forEach(job => {
+          job.data().status === "public" && puplic.push(job.data());
+          job.data().status === "hired" && hired.push(job.data());
+          job.data().status === "closed" && closed.push(job.data());
+        });
+        setClientJobs({ allJobs: res.docs.length, hired: hired.length, public: puplic.length, closed: closed.length });
+      });
+    }
   }, [])
 
   return (

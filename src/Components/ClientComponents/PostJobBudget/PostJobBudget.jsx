@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { updateJob } from '../../../Network/Network';
 import './PostJobBudget.css'
 
-export default function PostJobBudget({ setBtns, btns }) {
+export default function PostJobBudget({ completeStep, completedSteps }) {
     const { t } = useTranslation();
     const [job, setJob] = useState({ jobPaymentType: "", jobBudget: "" });
 
@@ -25,13 +25,20 @@ export default function PostJobBudget({ setBtns, btns }) {
         }
     };
 
-    const addData = () => {
+    const addData = (e) => {
+        e.preventDefault(); // Empêche la navigation immédiate
         console.log(job);
         const id = localStorage.getItem("docID");
         console.log(id);
-        updateJob({ ...job, jobPaymentTypeAr: job.jobPaymentType === "Fixed Price" ? "عمل بميزانية ثابتة" : "عمل بالساعة" }, id);
-
-        setBtns({ ...btns, review: false });
+        updateJob({ ...job, jobPaymentTypeAr: job.jobPaymentType === "Fixed Price" ? "عمل بميزانية ثابتة" : "عمل بالساعة" }, id)
+          .then(() => {
+            completeStep('budget');
+            // Navigation manuelle après la completion de l'étape
+            window.location.href = "/post-job/review";
+          })
+          .catch((error) => {
+            console.error("Error updating job:", error);
+          });
     };
 
     return (
@@ -127,7 +134,7 @@ export default function PostJobBudget({ setBtns, btns }) {
                         <Link className="btn border text-success me-4 px-5" to="/post-job/visibility">{t("Back")}</Link>
                     </button>
                     <button className={`btn ${job.jobPaymentType === "" || job.jobBudget === "" || job.jobBudget === "0" ? "disabled" : ""}`}>
-                        <Link className="btn bg-upwork px-5" to="/post-job/review" onClick={addData}>{t("Next")}</Link>
+                        <Link className="btn bg-upwork px-5" to="#" onClick={addData}>{t("Next")}</Link>
                     </button>
                 </div>
             </section>

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateJob } from "../../../Network/Network";
 import "./PostJobTitle.css";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobTitle({ setBtns, btns }) {
+export default function PostJobTitle({ completeStep, completedSteps }) {
   const [job, setJob] = useState({ jobTitle: "", jobCategory: "" });
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const getData = (e) => {
     const val = e.target.value;
@@ -30,9 +31,28 @@ export default function PostJobTitle({ setBtns, btns }) {
     console.log(job);
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob({ jobTitle: job.jobTitle, jobCategory: job.jobCategory, jobCategoryAr: job.jobCategory === "Graphic Design" ? "تصميم الجرافيك" : job.jobCategory === "Web Development" ? "تطوير الويب" : job.jobCategory === "Front-End Development" ? "تطوير الواجهة الأمامية" : job.jobCategory === "Web Design" ? "تصميم الويب" : "تطوير الهاتف" }, id);
-    setBtns({ ...btns, description: false });
+    if (id && job.jobTitle && job.jobCategory && job.jobCategory !== "Select a category") {
+      updateJob({ 
+        jobTitle: job.jobTitle, 
+        jobCategory: job.jobCategory, 
+        jobCategoryAr: job.jobCategory === "Graphic Design" ? "تصميم الجرافيك" : job.jobCategory === "Web Development" ? "تطوير الويب" : job.jobCategory === "Front-End Development" ? "تطوير الواجهة الأمامية" : job.jobCategory === "Web Design" ? "تصميم الويب" : "تطوير الهاتف" 
+      }, id)
+      .then(() => {
+        completeStep("description");
+        navigate("/post-job/description");
+      })
+      .catch((error) => {
+        console.error("Error updating job:", error);
+        alert("Failed to save job details. Please try again.");
+      });
+    }
   };
+
+  const isFormValid = job.jobTitle.length >= 4 && 
+                     job.jobTitle.split(" ").length >= 3 && 
+                     job.jobTitle !== job.jobTitle.toUpperCase() &&
+                     job.jobCategory && 
+                     job.jobCategory !== "Select a category";
 
   return (
     <>
@@ -97,11 +117,15 @@ export default function PostJobTitle({ setBtns, btns }) {
           <button className="btn">
             <Link className="btn border text-success me-4 px-5" to="/post-job">{t("Back")}</Link>
           </button>
-          <button className={`btn ${job.jobTitle === "" || job.jobCategory === "" || job.jobCategory === "Select a category" ? "disabled" : ""}`}>
-            <Link className="btn bg-upwork px-5" to="/post-job/description" onClick={addData}>{t("Next")}</Link>
+          <button 
+            className={`btn ${!isFormValid ? "disabled" : ""}`}
+            onClick={addData}
+            disabled={!isFormValid}
+          >
+            <span className="btn bg-upwork px-5">{t("Next")}</span>
           </button>
         </div>
       </section>
     </>
-  )
+  );
 }

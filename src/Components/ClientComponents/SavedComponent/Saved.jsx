@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from 'react-redux';
 import ShowMore from 'react-show-more-button/dist/module';
 import { db } from '../../../firebase';
+import { doc, getDoc } from "firebase/firestore";
 import { updateUserData } from '../../../Network/Network';
 import { clientDataAction } from '../../../Store/actions/clientData';
 import ImgWithActiveStatus from '../ImgWithActiveStatus/ImgWithActiveStatus';
@@ -16,9 +17,8 @@ export default function Saved({ talentId, isliked, setisliked }) {
   console.log(talentId);
   useEffect(() => {
     dispatch(clientDataAction());
-    db.collection("talent")
-      .doc(talentId)
-      .get()
+    const docRef = doc(db, "talent", talentId);
+    getDoc(docRef)
       .then((res) => {
         settalentSaved(res.data());
       });

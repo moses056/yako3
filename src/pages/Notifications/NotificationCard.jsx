@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import img from "../../assets/Img/icon-user.svg";
 import { auth, db } from '../../firebase';
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 
 export default function NotificationCard({ notification, collectionName, getNotifications }) {
@@ -9,18 +10,13 @@ export default function NotificationCard({ notification, collectionName, getNoti
     const { data, docID } = notification;
 
     const remove = () => {
-        db.collection(collectionName)
-            .doc(auth.currentUser.uid)
-            .collection("notification")
-            .doc(docID)
-            .delete().then(res => getNotifications())
+        const docRef = doc(db, collectionName, auth.currentUser.uid, "notification", docID);
+        deleteDoc(docRef).then(res => getNotifications());
     }
 
     const updateShow = () => {
-        db.collection(collectionName)
-            .doc(auth.currentUser.uid)
-            .collection("notification")
-            .doc(docID).update({ isShow: true })
+        const docRef = doc(db, collectionName, auth.currentUser.uid, "notification", docID);
+        updateDoc(docRef, { isShow: true });
     }
 
 

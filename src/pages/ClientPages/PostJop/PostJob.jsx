@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import PostJobAside from '../../../Components/ClientComponents/PostJobAside/PostJobAside';
 import PostJobTitle from '../../../Components/ClientComponents/PostJobTitle/PostJobTitle';
 import PostJobDescription from '../../../Components/ClientComponents/PostJobDescription/PostJobDescription';
@@ -12,27 +12,132 @@ import PostJobGetStarted from '../../../Components/ClientComponents/PostJobGetSt
 
 export default function PostJob() {
   const [start, setStart] = useState(false);
-  const [btns, setBtns] = useState({
-    title: true,
-    description: true,
-    details: true,
-    expertise: true,
-    visibility: true,
-    budget: true,
-    review: true
+  const [completedSteps, setCompletedSteps] = useState({
+    getStarted: false,
+    title: false,
+    description: false,
+    details: false,
+    expertise: false,
+    visibility: false,
+    budget: false,
+    review: false
   });
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Load completed steps from localStorage on mount
+  useEffect(() => {
+    const savedSteps = localStorage.getItem('completedSteps');
+    if (savedSteps) {
+      const parsedSteps = JSON.parse(savedSteps);
+      // Check if we're starting a new job (all steps are completed)
+      if (parsedSteps.review && parsedSteps.budget && parsedSteps.visibility && parsedSteps.expertise && parsedSteps.details && parsedSteps.description && parsedSteps.title && parsedSteps.getStarted) {
+        // If all steps are completed, reset for a new job
+        resetSteps();
+      } else {
+        setCompletedSteps(parsedSteps);
+      }
+    }
+    
+    const savedStart = localStorage.getItem('jobStarted');
+    if (savedStart === 'true') {
+      setStart(true);
+    }
+  }, []);
+
+  // Save completed steps to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('completedSteps', JSON.stringify(completedSteps));
+  }, [completedSteps]);
+
+  // Save start state to localStorage
+  useEffect(() => {
+    localStorage.setItem('jobStarted', start.toString());
+  }, [start]);
 
   const isStart = () => {
-    setStart(true); // ✅ plus de mutation directe
+    setStart(true);
+    setCompletedSteps(prev => ({ ...prev, getStarted: true }));
   };
 
-  // Fonction pour activer un bouton spécifique
-  const enableBtn = (key) => {
-    setBtns((prev) => ({
-      ...prev,
-      [key]: false // par exemple false = bouton activé
-    }));
+  const completeStep = (stepName) => {
+    setCompletedSteps(prev => ({ ...prev, [stepName]: true }));
   };
+
+  const resetSteps = () => {
+    setCompletedSteps({
+      getStarted: false,
+      title: false,
+      description: false,
+      details: false,
+      expertise: false,
+      visibility: false,
+      budget: false,
+      review: false
+    });
+    setStart(false);
+    localStorage.removeItem('completedSteps');
+    localStorage.removeItem('jobStarted');
+    localStorage.removeItem('docID');
+  };
+
+  // Check if user can access current route
+  const canAccessRoute = () => {
+    const path = location.pathname;
+    const steps = ['getStarted', 'title', 'description', 'details', 'expertise', 'visibility', 'budget', 'review'];
+    const stepPaths = {
+      '/post-job': 'getStarted',
+      '/post-job/title': 'title',
+      '/post-job/description': 'description',
+      '/post-job/details': 'details',
+      '/post-job/expertise': 'expertise',
+      '/post-job/visibility': 'visibility',
+      '/post-job/budget': 'budget',
+      '/post-job/review': 'review'
+    };
+
+    const currentStep = stepPaths[path];
+    if (!currentStep) return true; // Allow access to unknown paths
+
+    const currentIndex = steps.indexOf(currentStep);
+    
+    // Always allow access to getStarted
+    if (currentStep === 'getStarted') return true;
+    
+    // Allow access if previous step is completed
+    if (currentIndex > 0 && completedSteps[steps[currentIndex - 1]]) return true;
+    
+    // Allow access if current step is completed
+    if (completedSteps[currentStep]) return true;
+    
+    return false;
+  };
+
+  // Redirect if user cannot access current route
+  useEffect(() => {
+    if (!canAccessRoute()) {
+      // Find the first accessible step
+      const steps = ['getStarted', 'title', 'description', 'details', 'expertise', 'visibility', 'budget', 'review'];
+      const stepPaths = {
+        getStarted: '/post-job',
+        title: '/post-job/title',
+        description: '/post-job/description',
+        details: '/post-job/details',
+        expertise: '/post-job/expertise',
+        visibility: '/post-job/visibility',
+        budget: '/post-job/budget',
+        review: '/post-job/review'
+      };
+
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (completedSteps[steps[i]] || i === 0) {
+          navigate(stepPaths[steps[i]]);
+          break;
+        }
+      }
+    }
+  }, [location.pathname, completedSteps, navigate]);
 
   return (
     <section className="sec-bg-cn p-4">
@@ -40,48 +145,52 @@ export default function PostJob() {
         <div className="row">
           {/* Barre latérale avec état des boutons */}
           <div className="col-lg-3">
-            <PostJobAside btns={btns} />
+            <PostJobAside btns={completedSteps} />
           </div>
 
           {/* Zone principale */}
           <div className="col-lg-9">
             <Routes>
               <Route
-                path="/post-job"
+                index
                 element={
                   <PostJobGetStarted
                     start={start}
                     isStart={isStart}
-                    setBtns={setBtns}
-                    btns={btns}
+                    completeStep={completeStep}
+                    completedSteps={completedSteps}
+                    resetSteps={resetSteps}
                   />
                 }
               />
               <Route
-                path="/post-job/title"
-                element={<PostJobTitle setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="title"
+                element={<PostJobTitle completeStep={completeStep} completedSteps={completedSteps} />}
               />
               <Route
-                path="/post-job/description"
-                element={<PostJobDescription setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="description"
+                element={<PostJobDescription completeStep={completeStep} completedSteps={completedSteps} />}
               />
               <Route
-                path="/post-job/details"
-                element={<PostJobDetails setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="details"
+                element={<PostJobDetails completeStep={completeStep} completedSteps={completedSteps} />}
               />
               <Route
-                path="/post-job/expertise"
-                element={<PostJobExpertise setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="expertise"
+                element={<PostJobExpertise completeStep={completeStep} completedSteps={completedSteps} />}
               />
               <Route
-                path="/post-job/visibility"
-                element={<PostJobVisibility setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="visibility"
+                element={<PostJobVisibility completeStep={completeStep} completedSteps={completedSteps} />}
               />
               <Route
-                path="/post-job/budget"
-                element={<PostJobBudget setBtns={setBtns} btns={btns} enableBtn={enableBtn} />}
+                path="budget"
+                element={<PostJobBudget completeStep={completeStep} completedSteps={completedSteps} />}
               />
-              <Route path="/post-job/review" element={<PostJobReview />} />
+              <Route 
+                path="review" 
+                element={<PostJobReview completeStep={completeStep} completedSteps={completedSteps} />} 
+              />
             </Routes>
           </div>
         </div>

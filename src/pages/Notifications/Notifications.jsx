@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 import { useEffect, useState } from "react"
 import { auth, db } from "../../firebase"
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
 import NotificationCard from "./NotificationCard";
 
 export default function Notifications() {
@@ -16,14 +17,15 @@ export default function Notifications() {
 
     const getNotifications = () => {
         const arr = [];
-        db.collection(collectionName)
-            .doc(auth.currentUser.uid)
-            .collection("notification")
-            .orderBy("time", "desc")
-            .get().then(res => {
-                res.docs.map(notification => arr.push({ data: { ...notification.data() }, docID: notification.id }));
-                setNotifications([...arr])
-            })
+        const q = query(
+            collection(db, collectionName, auth.currentUser.uid, "notification"),
+            orderBy("time", "desc")
+        );
+        
+        getDocs(q).then(res => {
+            res.docs.forEach(notification => arr.push({ data: { ...notification.data() }, docID: notification.id }));
+            setNotifications([...arr])
+        })
     }
 
 

@@ -8,6 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { talentDataAction } from "../../../Store/actions/talentData";
 import { updateUserData } from "../../../Network/Network";
 import { db, auth } from "../../../firebase";
+import { collection, query, where, onSnapshot, getDocs, doc, deleteDoc } from "firebase/firestore";
 
 export default function ConnectsAndSubmit() {
   const { t } = useTranslation();
@@ -22,13 +23,14 @@ export default function ConnectsAndSubmit() {
   const [isliked, setisliked] = useState(false)
 
   useEffect(() => {
-    db.collection("talent")
-      .doc(auth.currentUser.uid)
-      .collection("jobProposal")
-      .where("jobId", "==", id)
-      .onSnapshot((res) => {
-        if (res?.docs.length > 0) setjobProposal(true);
-      });
+    const q = query(
+      collection(db, "talent", auth.currentUser.uid, "jobProposal"),
+      where("jobId", "==", id)
+    );
+    
+    onSnapshot(q, (res) => {
+      if (res?.docs.length > 0) setjobProposal(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -60,42 +62,33 @@ export default function ConnectsAndSubmit() {
 
   const handlewithdrawProposal = async () => {
     try {
-      await db
-        .collection("job")
-        .doc(id)
-        .collection("proposals")
-        .where("talentId", "==", auth.currentUser.uid)
-        .get()
-        .then((res) =>
-          res.docs.map((e) => {
-            proposal = e.id;
-            setProposal(proposal);
-            db.collection("job")
-              .doc(id)
-              .collection("proposals")
-              .doc(proposal)
-              .delete();
-            console.log(proposal);
-          })
-        );
-      await db
-        .collection("talent")
-        .doc(auth.currentUser.uid)
-        .collection("jobProposal")
-        .where("jobId", "==", id)
-        .get()
-        .then((res) =>
-          res.docs.map((e) => {
-            talent = e.id;
-            setTalent(talent);
-            db.collection("talent")
-              .doc(auth.currentUser.uid)
-              .collection("jobProposal")
-              .doc(talent)
-              .delete();
-            console.log(talent);
-          })
-        );
+      const q = query(
+        collection(db, "job", id, "proposals"),
+        where("talentId", "==", auth.currentUser.uid)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((e) => {
+        proposal = e.id;
+        setProposal(proposal);
+        const docRef = doc(db, "job", id, "proposals", proposal);
+        deleteDoc(docRef);
+        console.log(proposal);
+      });
+
+      const q2 = query(
+        collection(db, "talent", auth.currentUser.uid, "jobProposal"),
+        where("jobId", "==", id)
+      );
+      
+      const querySnapshot2 = await getDocs(q2);
+      querySnapshot2.forEach((e) => {
+        talent = e.id;
+        setTalent(talent);
+        const docRef = doc(db, "talent", auth.currentUser.uid, "jobProposal", talent);
+        deleteDoc(docRef);
+        console.log(talent);
+      });
     } catch (err) {
       console.log(err);
     }

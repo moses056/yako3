@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { auth, db } from "../../../firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import OneContract from './OneContract';
 
 
@@ -13,19 +14,20 @@ export default function AllContracts() {
 
 
   useEffect(() => {
-    db.collection("client")
-      .doc(auth.currentUser.uid)
-      .collection("contracts")
-      .where("talentResponse", "==", "accept")
-      .onSnapshot(res => {
-        const arr = [];
-        res.docs.map(contract => {
-          if (contract.exists) {
-            arr.push(contract.data());
-          }
-        });
-        setContracts([...arr]);
+    const q = query(
+      collection(db, "client", auth.currentUser.uid, "contracts"),
+      where("talentResponse", "==", "accept")
+    );
+    
+    onSnapshot(q, res => {
+      const arr = [];
+      res.docs.forEach(contract => {
+        if (contract.exists()) {
+          arr.push(contract.data());
+        }
       });
+      setContracts([...arr]);
+    });
 
   }, []);
 

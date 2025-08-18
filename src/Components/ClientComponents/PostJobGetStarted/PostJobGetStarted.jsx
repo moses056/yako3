@@ -1,14 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import createDocument, { updateJob } from "../../../Network/Network";
 import { auth } from "./../../../firebase";
 import { useSelector } from "react-redux";
 
-export default function PostJobGetStarted({ start, isStart, setBtns, btns }) {
+export default function PostJobGetStarted({ start, isStart, completeStep, completedSteps }) {
 
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const client = useSelector(state => state.clientData)
   const [job, setJob] = useState({ jobDuration: "" });
 
@@ -29,6 +30,13 @@ export default function PostJobGetStarted({ start, isStart, setBtns, btns }) {
         clientPaymentVerified: client.paymentVerified,
         talentJobReview: {},
         clientJobReview: {},
+      })
+      .then((res) => {
+        console.log("Job created successfully:", res.id);
+      })
+      .catch((error) => {
+        console.error("Error creating job:", error);
+        alert("Failed to create job. Please try again.");
       });
   }
 
@@ -41,8 +49,17 @@ export default function PostJobGetStarted({ start, isStart, setBtns, btns }) {
     console.log(job);
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob({ jobID: id, jobDuration: job.jobDuration, jobDurationAr: job.jobDuration === "short term" ? "فترة قصيرة" : "فترة طويلة" }, id);
-    setBtns({ ...btns, title: false });
+    if (id && job.jobDuration) {
+      updateJob({ jobID: id, jobDuration: job.jobDuration, jobDurationAr: job.jobDuration === "short term" ? "فترة قصيرة" : "فترة طويلة" }, id)
+        .then(() => {
+          completeStep("title");
+          navigate("/post-job/title");
+        })
+        .catch((error) => {
+          console.error("Error updating job:", error);
+          alert("Failed to save job duration. Please try again.");
+        });
+    }
   };
 
   return (
@@ -81,8 +98,12 @@ export default function PostJobGetStarted({ start, isStart, setBtns, btns }) {
               <button className="btn">
                 <Link className="btn border text-success me-4 px-5 fw-bold" to="/home">{t("Cancel")}</Link>
               </button>
-              <button className={`btn ${job.jobDuration === "" ? "disabled" : ""}`}>
-                <Link className="btn bg-upwork px-5" to="/post-job/title" onClick={addData}>{t("Continue")}</Link>
+              <button 
+                className={`btn ${job.jobDuration === "" ? "disabled" : ""}`}
+                onClick={addData}
+                disabled={job.jobDuration === ""}
+              >
+                <span className="btn bg-upwork px-5">{t("Continue")}</span>
               </button>
             </div>
           </>

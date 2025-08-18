@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function MessagesLeftSide({ talentID }) {
     console.log(talentID);
@@ -11,7 +12,8 @@ export default function MessagesLeftSide({ talentID }) {
 
     useEffect(() => {
         if (talentID) {
-            db.collection("talent").doc(talentID).get().then(doc => setTalent(doc.data()));
+            const docRef = doc(db, "talent", talentID);
+            getDoc(docRef).then(doc => setTalent(doc.data()));
         }
     }, []);
 
