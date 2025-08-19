@@ -1,14 +1,33 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./PostJobVisibility.css";
 import upwork from "../../../assets/Img/TLpZ1jf.png";
 import { updateJob } from "../../../Network/Network";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobVisibility({ completeStep, completedSteps }) {
+export default function PostJobVisibility({ onComplete, onBack, isCompleted }) {
   const [job, setJob] = useState({ jobVisibility: "", freelancerNeed: "" });
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  // Check if we have a valid job session
+  useEffect(() => {
+    const docID = localStorage.getItem("docID");
+    
+    if (!docID) {
+      console.log("No job session found, redirecting to get started");
+      navigate("/post-job");
+      return;
+    }
+    
+    // If already completed, redirect to next step
+    if (isCompleted) {
+      navigate("/post-job/budget");
+      return;
+    }
+  }, [navigate, isCompleted]);
 
   const getData = (e) => {
     const val = e.target.value;
@@ -31,13 +50,40 @@ export default function PostJobVisibility({ completeStep, completedSteps }) {
     console.log(job);
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob({ jobVisibility: job.jobVisibility, jobVisibilityAr: job.jobVisibility === "anyone" ? "أى شخص" : job.jobVisibility === "invite only" ? "دعوة فقط" : "مستخدم أبورك فقط", freelancerNeed: job.freelancerNeed, freelancerNeedAr: job.freelancerNeed === "one freelancer" ? "مستقل واحد" : "أكثر من مستقل" }, id);
-    completeStep('visibility');
+    
+    if (!id) {
+      alert("Job session expired. Please start over.");
+      navigate("/post-job");
+      return;
+    }
+    
+    if (!job.jobVisibility || !job.freelancerNeed) {
+      alert("Please fill in all required fields before proceeding.");
+      return;
+    }
+    
+    setLoading(true);
+    updateJob({ 
+      jobVisibility: job.jobVisibility, 
+      jobVisibilityAr: job.jobVisibility === "anyone" ? "أى شخص" : job.jobVisibility === "invite only" ? "دعوة فقط" : "مستخدم أبورك فقط", 
+      freelancerNeed: job.freelancerNeed, 
+      freelancerNeedAr: job.freelancerNeed === "one freelancer" ? "مستقل واحد" : "أكثر من مستقل" 
+    }, id)
+      .then(() => {
+        onComplete();
+      })
+      .catch((error) => {
+        console.error("Error updating job:", error);
+        alert("Failed to save job visibility. Please try again.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
     <>
-      <section className=" bg-white border rounded mt-3 pt-4">
+      <section className="bg-white border rounded mt-3 pt-4">
         <div className="border-bottom ps-4">
           <h4>{t("Visibility")}</h4>
           <p>{t("Step 5 of 7")}</p>
@@ -117,11 +163,17 @@ export default function PostJobVisibility({ completeStep, completedSteps }) {
 
       <section className="bg-white border rounded mt-3">
         <div className="ps-4 my-3">
-          <button className="btn">
-            <Link className="btn border text-success me-4 px-5" to="/post-job/expertise">{t("Back")}</Link>
+          <button className="btn border text-success me-4 px-5" onClick={onBack}>
+            {t("Back")}
           </button>
-          <button className={`btn ${job.jobVisibility === "" || job.freelancerNeed === "" ? "disabled" : ""}`}>
-            <Link className="btn bg-upwork px-5" to="/post-job/budget" onClick={addData}>{t("Next")}</Link>
+          <button 
+            className={`btn ${job.jobVisibility === "" || job.freelancerNeed === "" || loading ? "disabled" : ""}`}
+            onClick={addData}
+            disabled={job.jobVisibility === "" || job.freelancerNeed === "" || loading}
+          >
+            <span className="btn bg-upwork px-5">
+              {loading ? t("Loading...") : t("Next")}
+            </span>
           </button>
         </div>
       </section>

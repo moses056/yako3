@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { serverTimestamp, doc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db } from "../../../firebase";
 import { updateJob } from "../../../Network/Network";
@@ -8,7 +8,7 @@ import "./PostJobReview.css";
 import { useTranslation } from "react-i18next";
 import Loader from "../../SharedComponents/Loader/Loader";
 
-export default function PostJobReview() {
+export default function PostJobReview({ onComplete, onBack, isCompleted }) {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -18,6 +18,17 @@ export default function PostJobReview() {
   const id = localStorage.getItem("docID");
 
   useEffect(() => {
+    if (!id) {
+      navigate("/post-job");
+      return;
+    }
+    
+    // If already completed, redirect to home
+    if (isCompleted) {
+      navigate("/");
+      return;
+    }
+    
     const unsubscribe = onSnapshot(doc(db, "job", id), (doc) => {
       if (doc.exists()) {
         setJob({ ...doc.data() });
@@ -28,7 +39,7 @@ export default function PostJobReview() {
       }
     });
     return unsubscribe;
-  }, [id, navigate]);
+  }, [id, navigate, isCompleted]);
 
   const publishJob = () => {
     if (id) {
@@ -36,12 +47,15 @@ export default function PostJobReview() {
         { postTime: serverTimestamp(), status: "public" },
         id
       ).then(() => {
-        localStorage.removeItem("docID");
-        navigate("/");
+        // Complete the review step
+        onComplete();
       }).catch((error) => {
         console.error("Error publishing job:", error);
         alert("Failed to publish job. Please try again.");
       });
+    } else {
+      alert("Job session expired. Please start over.");
+      navigate("/post-job");
     }
   };
 
@@ -64,7 +78,7 @@ export default function PostJobReview() {
       {
         job !== null
           ? <>
-            <section className=" bg-white border rounded mt-3">
+            <section className="bg-white border rounded mt-3">
               <div className="ps-4 d-flex border-bottom justify-content-between align-items-center py-4">
                 <h4>{t("Review and post")}</h4>
                 <button 
@@ -88,7 +102,7 @@ export default function PostJobReview() {
               </div>
             </section>
 
-            <section className=" bg-white border rounded mt-4">
+            <section className="bg-white border rounded mt-4">
               <div className="px-4 mt-4">
                 <h5>{t("Description")}</h5>
                 <div>
@@ -99,7 +113,7 @@ export default function PostJobReview() {
               </div>
             </section>
 
-            <section className=" bg-white border rounded mt-4">
+            <section className="bg-white border rounded mt-4">
               <div className="px-4 mt-4">
                 <h5>{t("Details")}</h5>
                 <div>
@@ -111,7 +125,7 @@ export default function PostJobReview() {
               </div>
             </section>
 
-            <section className=" bg-white border rounded mt-4">
+            <section className="bg-white border rounded mt-4">
               <div className="px-4 mt-4">
                 <h5>{t("Expertise")}</h5>
                 <div>
@@ -123,7 +137,7 @@ export default function PostJobReview() {
               </div>
             </section>
 
-            <section className=" bg-white border rounded mt-4">
+            <section className="bg-white border rounded mt-4">
               <div className="px-4 mt-4">
                 <h5>{t("Visibility")}</h5>
                 <div>
@@ -160,7 +174,13 @@ export default function PostJobReview() {
                   {t("Post Job Now")}
                 </button>
                 <button 
-                  className="btn border text-success px-5" 
+                  className="btn border text-success me-4 px-5" 
+                  onClick={onBack}
+                >
+                  {t("Back")}
+                </button>
+                <button 
+                  className="btn border-danger text-danger px-5" 
                   onClick={deletePost}
                 >
                   {t("Delete & Exit")}

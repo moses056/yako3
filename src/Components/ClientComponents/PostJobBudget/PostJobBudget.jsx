@@ -1,12 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { updateJob } from '../../../Network/Network';
 import './PostJobBudget.css'
 
-export default function PostJobBudget({ completeStep, completedSteps }) {
+export default function PostJobBudget({ onComplete, onBack, isCompleted }) {
     const { t } = useTranslation();
     const [job, setJob] = useState({ jobPaymentType: "", jobBudget: "" });
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    // Check if we have a valid job session
+    useEffect(() => {
+        const docID = localStorage.getItem("docID");
+        
+        if (!docID) {
+            console.log("No job session found, redirecting to get started");
+            navigate("/post-job");
+            return;
+        }
+        
+        // If already completed, redirect to next step
+        if (isCompleted) {
+            navigate("/post-job/review");
+            return;
+        }
+    }, [navigate, isCompleted]);
 
     const getData = (e) => {
         const val = e.target.value;
@@ -30,20 +49,38 @@ export default function PostJobBudget({ completeStep, completedSteps }) {
         console.log(job);
         const id = localStorage.getItem("docID");
         console.log(id);
-        updateJob({ ...job, jobPaymentTypeAr: job.jobPaymentType === "Fixed Price" ? "عمل بميزانية ثابتة" : "عمل بالساعة" }, id)
+        
+        if (!id) {
+            alert("Job session expired. Please start over.");
+            navigate("/post-job");
+            return;
+        }
+        
+        if (!job.jobPaymentType) {
+            alert("Please select a payment type before proceeding.");
+            return;
+        }
+        
+        setLoading(true);
+        updateJob({ 
+            ...job, 
+            jobPaymentTypeAr: job.jobPaymentType === "Fixed Price" ? "عمل بميزانية ثابتة" : "عمل بالساعة" 
+        }, id)
           .then(() => {
-            completeStep('budget');
-            // Navigation manuelle après la completion de l'étape
-            window.location.href = "/post-job/review";
+            onComplete();
           })
           .catch((error) => {
             console.error("Error updating job:", error);
+            alert("Failed to save job budget. Please try again.");
+          })
+          .finally(() => {
+            setLoading(false);
           });
     };
 
     return (
         <>
-            <section className=" bg-white border rounded mt-3 pt-4">
+            <section className="bg-white border rounded mt-3 pt-4">
                 <div className="border-bottom ps-4">
                     <h4>{t("Budget")}</h4>
                     <p>{t("Step 6 of 7")}</p>
@@ -130,11 +167,17 @@ export default function PostJobBudget({ completeStep, completedSteps }) {
 
             <section className="bg-white border rounded mt-3">
                 <div className="ps-4 my-3">
-                    <button className="btn">
-                        <Link className="btn border text-success me-4 px-5" to="/post-job/visibility">{t("Back")}</Link>
+                    <button className="btn border text-success me-4 px-5" onClick={onBack}>
+                        {t("Back")}
                     </button>
-                    <button className={`btn ${job.jobPaymentType === "" || job.jobBudget === "" || job.jobBudget === "0" ? "disabled" : ""}`}>
-                        <Link className="btn bg-upwork px-5" to="#" onClick={addData}>{t("Next")}</Link>
+                    <button 
+                        className={`btn ${job.jobPaymentType === "" || loading ? "disabled" : ""}`}
+                        onClick={addData}
+                        disabled={job.jobPaymentType === "" || loading}
+                    >
+                        <span className="btn bg-upwork px-5">
+                            {loading ? t("Loading...") : t("Next")}
+                        </span>
                     </button>
                 </div>
             </section>

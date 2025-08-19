@@ -1,15 +1,33 @@
-/* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase";
 import { updateJob } from "../../../Network/Network";
 import "./PostJobDescription.css";
 
-export default function PostJobDescription({ completeStep, completedSteps }) {
+export default function PostJobDescription({ onComplete, onBack, isCompleted }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   let [job, setJob] = useState({ jobDescription: "", jobImages: [] });
+
+  // Check if we have a valid job session
+  useEffect(() => {
+    const docID = localStorage.getItem("docID");
+    
+    if (!docID) {
+      console.log("No job session found, redirecting to get started");
+      navigate("/post-job");
+      return;
+    }
+    
+    // If already completed, redirect to next step
+    if (isCompleted) {
+      navigate("/post-job/details");
+      return;
+    }
+  }, [navigate, isCompleted]);
+
   const getData = (e) => {
     const val = e.target.value;
     const name = e.target.name;
@@ -63,8 +81,7 @@ export default function PostJobDescription({ completeStep, completedSteps }) {
     if (id) {
       updateJob(job, id)
         .then(() => {
-          completeStep("details");
-          navigate("/post-job/details");
+          onComplete();
         })
         .catch((error) => {
           console.error("Error updating job:", error);
@@ -74,7 +91,7 @@ export default function PostJobDescription({ completeStep, completedSteps }) {
   }
 
   return (
-    <section className=" bg-white border rounded mt-3 pt-4">
+    <section className="bg-white border rounded mt-3 pt-4">
       <div className="border-bottom ps-4">
         <h4>{t("Description")}</h4>
         <p>{t("Step 2 of 7")}</p>
@@ -115,8 +132,8 @@ export default function PostJobDescription({ completeStep, completedSteps }) {
         <p className="my-3">{t("You may attach up to 5 files under 100 MB each")}</p>
       </div>
       <div className="ps-4 my-3 pt-4 pb-3 pt-3 border-top">
-        <button className="btn">
-          <Link className="btn border text-success me-4 px-5" to="/post-job/title">{t("Back")}</Link>
+        <button className="btn border text-success me-4 px-5" onClick={onBack}>
+          {t("Back")}
         </button>
         <button 
           className={`btn ${job.jobDescription === "" || job.jobDescription.length < 50 ? "disabled" : ""}`}

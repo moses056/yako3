@@ -1,13 +1,31 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { updateJob } from "../../../Network/Network";
 import "./PostJobTitle.css";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobTitle({ completeStep, completedSteps }) {
+export default function PostJobTitle({ onComplete, onBack, isCompleted }) {
   const [job, setJob] = useState({ jobTitle: "", jobCategory: "" });
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  // Check if we have a valid job session
+  useEffect(() => {
+    const docID = localStorage.getItem("docID");
+    
+    if (!docID) {
+      console.log("No job session found, redirecting to get started");
+      navigate("/post-job");
+      return;
+    }
+    
+    // If already completed, redirect to next step
+    if (isCompleted) {
+      navigate("/post-job/description");
+      return;
+    }
+  }, [navigate, isCompleted]);
 
   const getData = (e) => {
     const val = e.target.value;
@@ -31,20 +49,33 @@ export default function PostJobTitle({ completeStep, completedSteps }) {
     console.log(job);
     const id = localStorage.getItem("docID");
     console.log(id);
-    if (id && job.jobTitle && job.jobCategory && job.jobCategory !== "Select a category") {
+    
+    if (!id) {
+      alert("Job session expired. Please start over.");
+      navigate("/post-job");
+      return;
+    }
+    
+    if (job.jobTitle && job.jobCategory && job.jobCategory !== "Select a category") {
+      setLoading(true);
       updateJob({ 
         jobTitle: job.jobTitle, 
         jobCategory: job.jobCategory, 
         jobCategoryAr: job.jobCategory === "Graphic Design" ? "تصميم الجرافيك" : job.jobCategory === "Web Development" ? "تطوير الويب" : job.jobCategory === "Front-End Development" ? "تطوير الواجهة الأمامية" : job.jobCategory === "Web Design" ? "تصميم الويب" : "تطوير الهاتف" 
       }, id)
       .then(() => {
-        completeStep("description");
-        navigate("/post-job/description");
+        console.log("Job title updated successfully");
+        onComplete();
       })
       .catch((error) => {
         console.error("Error updating job:", error);
         alert("Failed to save job details. Please try again.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
+    } else {
+      alert("Please fill in all required fields correctly before proceeding.");
     }
   };
 
@@ -56,7 +87,7 @@ export default function PostJobTitle({ completeStep, completedSteps }) {
 
   return (
     <>
-      <section className=" bg-white border rounded mt-3 pt-4">
+      <section className="bg-white border rounded mt-3 pt-4">
         <div className="border-bottom ps-4">
           <h4>{t("Title")}</h4>
           <p>{t("Step 1 of 7")}</p>
@@ -98,7 +129,7 @@ export default function PostJobTitle({ completeStep, completedSteps }) {
         </div>
       </section>
 
-      <section className=" bg-white border rounded mt-3 pt-4">
+      <section className="bg-white border rounded mt-3 pt-4">
         <div className="border-bottom ps-4">
           <h4>{t("Job Category")}</h4>
           <p className="w-75">{t(
@@ -114,15 +145,17 @@ export default function PostJobTitle({ completeStep, completedSteps }) {
           </select>
         </div>
         <div className="ps-4 my-3">
-          <button className="btn">
-            <Link className="btn border text-success me-4 px-5" to="/post-job">{t("Back")}</Link>
+          <button className="btn border text-success me-4 px-5" onClick={onBack}>
+            {t("Back")}
           </button>
           <button 
-            className={`btn ${!isFormValid ? "disabled" : ""}`}
+            className={`btn ${!isFormValid || loading ? "disabled" : ""}`}
             onClick={addData}
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
           >
-            <span className="btn bg-upwork px-5">{t("Next")}</span>
+            <span className="btn bg-upwork px-5">
+              {loading ? t("Loading...") : t("Next")}
+            </span>
           </button>
         </div>
       </section>

@@ -1,110 +1,66 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import './PostJobAside.css'
-export default function PostJobAside({ btns }) {
-const{t} =useTranslation();
-    return (
-        <aside>
-            <ul>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.title}>
-                        <Link
-                            to="/post-job/title"
-                            className={`d-flex justify-content-between ${!btns.title && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-pencil-alt mx-4"></i>
-                                {t("Title")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.title && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.description}>
-                        <Link
-                            to="/post-job/description"
-                            className={`d-flex justify-content-between ${!btns.description && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-edit mx-4"></i>
-                                {t("Description")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.description && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.details}>
-                        <Link
-                            to="/post-job/details"
-                            className={`d-flex justify-content-between ${!btns.details && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-list-alt mx-4"></i>
-                                {t("Details")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.details && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.expertise}>
-                        <Link
-                            to="/post-job/expertise"
-                            className={`d-flex justify-content-between ${!btns.expertise && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-tools mx-4"></i>
-                                {t("Expertise")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.expertise && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.visibility}>
-                        <Link
-                            to="/post-job/visibility"
-                            className={`d-flex justify-content-between ${!btns.visibility && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-user-clock mx-4"></i>
-                                {t("Visibility")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.visibility && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.budget}>
-                        <Link
-                            to="/post-job/budget"
-                            className={`d-flex justify-content-between ${!btns.budget && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-search-dollar mx-4"></i>
-                                {t("Budget")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.budget && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-                <li className="py-1 my-2">
-                    <button className="btn w-100" disabled={btns.review}>
-                        <Link
-                            to="/post-job/review"
-                            className={`d-flex justify-content-between ${!btns.review && "border-start border-4 border-success"}`}
-                        >
-                            <span className="text-dark">
-                                <i className="fas fa-check mx-4"></i>
-                                {t("Review")}
-                            </span>
-                            <i className={`fas fa-check-circle ${btns.review && "text-dark"}`}></i>
-                        </Link>
-                    </button>
-                </li>
-            </ul>
-        </aside>
-    )
+
+export default function PostJobAside({ currentStep, completedSteps, onStepClick }) {
+  const { t } = useTranslation();
+  
+  const steps = [
+    { key: 'getStarted', path: '/post-job', icon: 'fas fa-play', label: t('Get Started') },
+    { key: 'title', path: '/post-job/title', icon: 'fas fa-pencil-alt', label: t('Title') },
+    { key: 'description', path: '/post-job/description', icon: 'fas fa-edit', label: t('Description') },
+    { key: 'details', path: '/post-job/details', icon: 'fas fa-list-alt', label: t('Details') },
+    { key: 'expertise', path: '/post-job/expertise', icon: 'fas fa-tools', label: t('Expertise') },
+    { key: 'visibility', path: '/post-job/visibility', icon: 'fas fa-user-clock', label: t('Visibility') },
+    { key: 'budget', path: '/post-job/budget', icon: 'fas fa-search-dollar', label: t('Budget') },
+    { key: 'review', path: '/post-job/review', icon: 'fas fa-check', label: t('Review') }
+  ];
+
+  const isStepAccessible = (stepKey) => {
+    const stepIndex = steps.findIndex(step => step.key === stepKey);
+    if (stepIndex === 0) return true; // getStarted is always accessible
+    
+    const previousStep = steps[stepIndex - 1];
+    return completedSteps[previousStep.key];
+  };
+
+  const isStepActive = (stepKey) => currentStep === stepKey;
+  const isStepCompleted = (stepKey) => completedSteps[stepKey];
+
+  return (
+    <aside>
+      <ul>
+        {steps.map((step, index) => {
+          const isAccessible = isStepAccessible(step.key);
+          const isActive = isStepActive(step.key);
+          const isCompleted = isStepCompleted(step.key);
+          
+          return (
+            <li key={step.key} className="py-1 my-2">
+              <button 
+                className="btn w-100" 
+                disabled={!isAccessible || isCompleted}
+                onClick={() => isAccessible && !isCompleted && onStepClick(step.key)}
+              >
+                <div
+                  className={`d-flex justify-content-between w-100 ${
+                    !isCompleted && isActive ? "border-start border-4 border-success" : ""
+                  }`}
+                >
+                  <span className={`text-dark ${!isAccessible ? 'opacity-50' : ''}`}>
+                    <i className={`${step.icon} mx-4`}></i>
+                    {step.label}
+                  </span>
+                  <i className={`fas fa-check-circle ${
+                    isCompleted ? 'text-success' : 
+                    isActive ? 'text-dark' : 
+                    'text-muted opacity-50'
+                  }`}></i>
+                </div>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </aside>
+  );
 }

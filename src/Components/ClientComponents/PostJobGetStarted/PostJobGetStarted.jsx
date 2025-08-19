@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import createDocument, { updateJob } from "../../../Network/Network";
@@ -12,8 +12,20 @@ export default function PostJobGetStarted({ start, isStart, completeStep, comple
   const navigate = useNavigate();
   const client = useSelector(state => state.clientData)
   const [job, setJob] = useState({ jobDuration: "" });
+  const [loading, setLoading] = useState(false);
+
+  // Check if we already have a job session
+  useEffect(() => {
+    const docID = localStorage.getItem("docID");
+    if (docID && !start) {
+      console.log("Existing job session found, completing getStarted step");
+      isStart();
+      completeStep("getStarted");
+    }
+  }, [isStart, completeStep, start]);
 
   const createJob = () => {
+    setLoading(true);
     isStart();
     console.log();
     createDocument("job",
@@ -33,10 +45,27 @@ export default function PostJobGetStarted({ start, isStart, completeStep, comple
       })
       .then((res) => {
         console.log("Job created successfully:", res.id);
+        // Ensure docID is stored in localStorage before navigating
+        localStorage.setItem("docID", res.id);
+        completeStep("getStarted");
+        // Add a small delay to ensure localStorage is updated
+        setTimeout(() => {
+          const storedId = localStorage.getItem("docID");
+          if (storedId) {
+            // Don't navigate to title yet, let user choose duration first
+            // navigate("/post-job/title");
+          } else {
+            console.error("Failed to store docID in localStorage");
+            alert("Failed to create job. Please try again.");
+          }
+        }, 100);
       })
       .catch((error) => {
         console.error("Error creating job:", error);
         alert("Failed to create job. Please try again.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -50,14 +79,23 @@ export default function PostJobGetStarted({ start, isStart, completeStep, comple
     const id = localStorage.getItem("docID");
     console.log(id);
     if (id && job.jobDuration) {
+      setLoading(true);
       updateJob({ jobID: id, jobDuration: job.jobDuration, jobDurationAr: job.jobDuration === "short term" ? "فترة قصيرة" : "فترة طويلة" }, id)
         .then(() => {
+          // First complete getStarted if not already completed
+          if (!completedSteps.getStarted) {
+            completeStep("getStarted");
+          }
+          // Then complete title step
           completeStep("title");
           navigate("/post-job/title");
         })
         .catch((error) => {
           console.error("Error updating job:", error);
           alert("Failed to save job duration. Please try again.");
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   };
@@ -71,7 +109,13 @@ export default function PostJobGetStarted({ start, isStart, completeStep, comple
         !start
           ?
           <div className="ps-4 my-3">
-            <button className="btn bg-upwork" onClick={createJob}>{t("Get Start")}</button>
+            <button 
+              className="btn bg-upwork" 
+              onClick={createJob}
+              disabled={loading}
+            >
+              {loading ? t("Loading...") : t("Get Start")}
+            </button>
           </div>
           :
           <>
@@ -99,11 +143,13 @@ export default function PostJobGetStarted({ start, isStart, completeStep, comple
                 <Link className="btn border text-success me-4 px-5 fw-bold" to="/home">{t("Cancel")}</Link>
               </button>
               <button 
-                className={`btn ${job.jobDuration === "" ? "disabled" : ""}`}
+                className={`btn ${job.jobDuration === "" || loading ? "disabled" : ""}`}
                 onClick={addData}
-                disabled={job.jobDuration === ""}
+                disabled={job.jobDuration === "" || loading}
               >
-                <span className="btn bg-upwork px-5">{t("Continue")}</span>
+                <span className="btn bg-upwork px-5">
+                  {loading ? t("Loading...") : t("Continue")}
+                </span>
               </button>
             </div>
           </>

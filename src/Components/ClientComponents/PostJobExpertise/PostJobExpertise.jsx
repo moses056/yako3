@@ -1,15 +1,33 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { updateJob } from "../../../Network/Network";
 import "./PostJobExpertise.css";
 import { useTranslation } from "react-i18next";
 
-export default function PostJobExpertise({ completeStep, completedSteps }) {
-
+export default function PostJobExpertise({ onComplete, onBack, isCompleted }) {
   const [inputVal, setInputVal] = useState("");
   const [skillsList, setSkillsList] = useState([]);
   const [job, setJob] = useState({ jobExperienceLevel: "", skills: [] });
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  // Check if we have a valid job session
+  useEffect(() => {
+    const docID = localStorage.getItem("docID");
+    
+    if (!docID) {
+      console.log("No job session found, redirecting to get started");
+      navigate("/post-job");
+      return;
+    }
+    
+    // If already completed, redirect to next step
+    if (isCompleted) {
+      navigate("/post-job/visibility");
+      return;
+    }
+  }, [navigate, isCompleted]);
 
   const getData = (e) => {
     const val = e.target.value;
@@ -27,31 +45,52 @@ export default function PostJobExpertise({ completeStep, completedSteps }) {
   };
 
   const addSkills = () => {
-    skillsList.push(inputVal);
-    setSkillsList([...skillsList]);
-    setJob({ ...job, skills: skillsList });
-    setInputVal("");
-    console.log(skillsList);
+    if (inputVal.trim()) {
+      skillsList.push(inputVal.trim());
+      setSkillsList([...skillsList]);
+      setJob({ ...job, skills: skillsList });
+      setInputVal("");
+      console.log(skillsList);
+    }
   };
 
   const addData = (e) => {
     e.preventDefault(); // Empêche la navigation immédiate
     const id = localStorage.getItem("docID");
     console.log(id);
-    updateJob({ skills: job.skills, jobExperienceLevel: job.jobExperienceLevel, jobExperienceLevelAr: job.jobExperienceLevel === "expert" ? "خبير" : job.jobExperienceLevel === "intermediate" ? "متوسط" : "مبتدئ" }, id)
+    
+    if (!id) {
+      alert("Job session expired. Please start over.");
+      navigate("/post-job");
+      return;
+    }
+    
+    if (!job.jobExperienceLevel) {
+      alert("Please select an experience level before proceeding.");
+      return;
+    }
+    
+    setLoading(true);
+    updateJob({ 
+      skills: job.skills, 
+      jobExperienceLevel: job.jobExperienceLevel, 
+      jobExperienceLevelAr: job.jobExperienceLevel === "expert" ? "خبير" : job.jobExperienceLevel === "intermediate" ? "متوسط" : "مبتدئ" 
+    }, id)
       .then(() => {
-        completeStep('expertise');
-        // Navigation manuelle après la completion de l'étape
-        window.location.href = "/post-job/visibility";
+        onComplete();
       })
       .catch((error) => {
         console.error("Error updating job:", error);
+        alert("Failed to save job expertise. Please try again.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <>
-      <section className=" bg-white border rounded mt-3 pt-4">
+      <section className="bg-white border rounded mt-3 pt-4">
         <div className="border-bottom ps-4">
           <h4>{t("Expertise")}</h4>
           <p>{t("Step 4 of 7")}</p>
@@ -111,7 +150,7 @@ export default function PostJobExpertise({ completeStep, completedSteps }) {
             />
             <button
               className="btn bg-upwork px-5"
-              disabled={!inputVal}
+              disabled={!inputVal.trim()}
               onClick={addSkills}
             >
               Add
@@ -119,7 +158,7 @@ export default function PostJobExpertise({ completeStep, completedSteps }) {
             <div className="my-4 d-flex justify-content-between"></div>
           </div>
           {skillsList.map((item, index) => (
-            <div className="chip mb-3 ms" key="index">
+            <div className="chip mb-3 ms" key={index}>
               <span>{item}</span>
             </div>
           ))}
@@ -128,24 +167,17 @@ export default function PostJobExpertise({ completeStep, completedSteps }) {
 
       <section className="bg-white border rounded mt-3">
         <div className="ps-4 my-3">
-          <button className="btn">
-            <Link
-              className="btn border text-success me-4 px-5"
-              to="/post-job/details"
-            >
-              {t("Back")}
-            </Link>
+          <button className="btn border text-success me-4 px-5" onClick={onBack}>
+            {t("Back")}
           </button>
           <button
-            className={`btn ${job.jobExperienceLevel === "" && "disabled"}`}
+            className={`btn ${job.jobExperienceLevel === "" || loading ? "disabled" : ""}`}
+            onClick={addData}
+            disabled={job.jobExperienceLevel === "" || loading}
           >
-            <Link
-              className="btn bg-upwork px-5"
-              to="#"
-              onClick={addData}
-            >
-              {t("Next")}
-            </Link>
+            <span className="btn bg-upwork px-5">
+              {loading ? t("Loading...") : t("Next")}
+            </span>
           </button>
         </div>
       </section>
