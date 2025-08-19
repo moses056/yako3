@@ -19,8 +19,22 @@ export default function PostJobAside({ currentStep, completedSteps, onStepClick 
     const stepIndex = steps.findIndex(step => step.key === stepKey);
     if (stepIndex === 0) return true; // getStarted is always accessible
     
-    const previousStep = steps[stepIndex - 1];
-    return completedSteps[previousStep.key];
+    // Find the current step index
+    const currentStepIndex = steps.findIndex(step => step.key === currentStep);
+    
+    // A step is accessible only if:
+    // 1. It's the immediate next step after the current step, AND
+    // 2. The current step is completed
+    if (stepIndex === currentStepIndex + 1 && completedSteps[currentStep]) {
+      return true;
+    }
+    
+    // Allow access to the current step even if not completed
+    if (stepKey === currentStep) {
+      return true;
+    }
+    
+    return false;
   };
 
   const isStepActive = (stepKey) => currentStep === stepKey;
@@ -38,22 +52,33 @@ export default function PostJobAside({ currentStep, completedSteps, onStepClick 
             <li key={step.key} className="py-1 my-2">
               <button 
                 className="btn w-100" 
-                disabled={!isAccessible || isCompleted}
-                onClick={() => isAccessible && !isCompleted && onStepClick(step.key)}
+                disabled={!isAccessible && !isCompleted}
+                onClick={() => {
+                  if (isCompleted) {
+                    // If step is completed, find the first incomplete step and redirect there
+                    const firstIncompleteStep = steps.find(s => !completedSteps[s.key]);
+                    if (firstIncompleteStep) {
+                      onStepClick(firstIncompleteStep.key);
+                    }
+                  } else if (isAccessible) {
+                    onStepClick(step.key);
+                  }
+                }}
               >
                 <div
                   className={`d-flex justify-content-between w-100 ${
+                    isCompleted ? "bg-success text-white" : 
                     !isCompleted && isActive ? "border-start border-4 border-success" : ""
                   }`}
                 >
-                  <span className={`text-dark ${!isAccessible ? 'opacity-50' : ''}`}>
+                  <span className={`${!isAccessible && !isCompleted ? 'opacity-50' : ''}`}>
                     <i className={`${step.icon} mx-4`}></i>
                     {step.label}
                   </span>
-                  <i className={`fas fa-check-circle ${
-                    isCompleted ? 'text-success' : 
-                    isActive ? 'text-dark' : 
-                    'text-muted opacity-50'
+                  <i className={`fas ${
+                    isCompleted ? 'fa-check-circle' : 
+                    isActive ? 'fa-circle' : 
+                    'fa-circle text-muted opacity-50'
                   }`}></i>
                 </div>
               </button>
