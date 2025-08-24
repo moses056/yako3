@@ -1,28 +1,177 @@
-/* eslint-disable */
-import React from 'react'
+import React, { useState } from 'react'
 
-export default function Question() {
+export default function Question({ question, answer, id }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
     return (
-        <div>
-            <div className="row">
-                <div className="col-1 fw-bolder text-secondary fs-1 text-center">Q</div>
-                <div className="col-11">
-                    <div className="row fs-3 ms-4 my-3">What is development and IT?</div>
-                    <div className="row fs-md-5 fs-6 ms-4 mb-3 text-secondary">
-                        <span>Development refers to the creation and management of business
-                        technology, including computer applications, financial systems,
-            and </span>
-                        <span className="collapse mb-4" id="answer1">logistical solutions that help an organization run its operational processes. Information technology (IT) is the use of computers and computer networks to store, retrieve, transmit, and maintain data and information.
-          </span>
-                    </div>
-                    <a data-bs-toggle="collapse" data-bs-target="#answer1" aria-expanded="false" aria-controls="collapseExample" className="text-decoration-none fs-md-5 fs-6 ms-5">
-                        Read More <i className="fas fa-chevron-down " />
-                    </a>
-                    <div className="row">
-                        <hr className="text-secondary my-3 mx-5 w-75" id="hr-line-CN" />
+        <>
+            <style>
+                {`
+                .yako-question-container {
+                    background-color: #f9f9f9;
+                    border-radius: 12px;
+                    padding: 25px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                    transition: all 0.3s ease;
+                }
+                
+                .yako-question-container:hover {
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                    transform: translateY(-3px);
+                }
+                
+                .yako-question {
+                    display: flex;
+                    align-items: flex-start;
+                }
+                
+                .yako-question-icon {
+                    background-color: #2e8b57;
+                    color: white;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                    margin-right: 20px;
+                    flex-shrink: 0;
+                }
+                
+                .yako-question-content {
+                    flex-grow: 1;
+                }
+                
+                .yako-question-title {
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #1a5c1a;
+                    margin-bottom: 15px;
+                    line-height: 1.3;
+                }
+                
+                .yako-answer {
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: #4a5568;
+                    margin-bottom: 15px;
+                }
+                
+                .yako-answer-collapsed {
+                    display: none;
+                }
+                
+                .yako-answer-collapsed.show {
+                    display: inline;
+                }
+                
+                .yako-read-more {
+                    color: #2e8b57;
+                    text-decoration: none;
+                    font-weight: 500;
+                    display: inline-flex;
+                    align-items: center;
+                    transition: all 0.3s ease;
+                }
+                
+                .yako-read-more:hover {
+                    color: #1a5c1a;
+                }
+                
+                .yako-read-more i {
+                    margin-left: 8px;
+                    transition: transform 0.3s ease;
+                }
+                
+                .yako-read-more i.rotated {
+                    transform: rotate(180deg);
+                }
+                
+                .yako-divider {
+                    height: 1px;
+                    background-color: #e2e8f0;
+                    margin-top: 20px;
+                    width: 100%;
+                }
+                
+                /* Animation au chargement */
+                .yako-question-container {
+                    animation: fadeInUp 0.6s ease-out;
+                }
+                
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .yako-question-container {
+                        padding: 20px;
+                    }
+                    
+                    .yako-question-title {
+                        font-size: 18px;
+                    }
+                    
+                    .yako-answer {
+                        font-size: 15px;
+                    }
+                }
+                
+                @media (max-width: 576px) {
+                    .yako-question-icon {
+                        width: 35px;
+                        height: 35px;
+                        font-size: 16px;
+                        margin-right: 15px;
+                    }
+                    
+                    .yako-question-title {
+                        font-size: 16px;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .yako-answer {
+                        font-size: 14px;
+                    }
+                }
+                `}
+            </style>
+            
+            <div className="yako-question-container">
+                <div className="yako-question">
+                    <div className="yako-question-icon">Q</div>
+                    <div className="yako-question-content">
+                        <h3 className="yako-question-title">{question}</h3>
+                        <div className="yako-answer">
+                            {isExpanded ? answer : `${answer.substring(0, 200)}...`}
+                            {!isExpanded && (
+                                <span className="yako-answer-collapsed" id={`answer-${id}`}>
+                                    {answer.substring(200)}
+                                </span>
+                            )}
+                        </div>
+                        <a 
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="yako-read-more"
+                        >
+                            {isExpanded ? "Lire moins" : "Lire plus"} 
+                            <i className={`fas fa-chevron-down ${isExpanded ? 'rotated' : ''}`}></i>
+                        </a>
+                        <div className="yako-divider"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }

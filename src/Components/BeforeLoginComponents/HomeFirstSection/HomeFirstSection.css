@@ -1,44 +1,334 @@
-.fs-h1-cn {
-  font-size: 45px;
-  line-height: 95px;
-  color: #1d4354;
+/* HomeFirstSection.css */
+:root {
+  --primary-green: #2e8b57;
+  --dark-green: #1a5c1a;
+  --light-green: #e6f7e6;
+  --accent-green: #4caf50;
+  --bg-light: #f9f9f9;
+  --text-dark: #333;
+  --text-light: #666;
+  --white: #ffffff;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.fs-p-cn {
-  color: #1d4354;
+.yako-hero-section {
+  padding: 80px 0;
+  background-color: var(--bg-light);
+  position: relative;
 }
 
-.fs-btns-cn {
-  background-color: #37a000;
-  color: white;
-  box-shadow: none;
-}
-.fs-btns-cn:hover {
-  color: white !important;
-  background-color: #008329;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.fs-btns-cn button:last-child {
-  color: #37a000;
-  box-shadow: none;
+.yako-hero-content {
+  max-width: 90%;
 }
 
-.fs-btns-cn button:first-child:hover {
-  background-color: #008329;
+.yako-hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--dark-green);
+  margin-bottom: 20px;
+  position: relative;
 }
 
-.fs-abs-img-cn {
-  left: 40%;
-  top: 65%;
-  padding: 10px;
-  background-color: white;
+.yako-hero-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 80px;
+  height: 4px;
+  background-color: var(--accent-green);
+  border-radius: 2px;
 }
-[dir="rtl"] .fs-h1-cn {
-  font-weight: bold;
+
+.yako-hero-subtitle {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  margin: 30px 0;
+  line-height: 1.6;
 }
-[dir="rtl"] .fs-abs-img-cn {
-  left: -15%;
+
+.yako-hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 30px 0;
 }
-[dir="rtl"] .fs-btns-cn {
-  font-size: 15px;
+
+.yako-btn {
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.yako-btn-primary {
+  background-color: var(--primary-green);
+  color: var(--white);
+  box-shadow: 0 4px 10px rgba(46, 139, 87, 0.3);
+}
+
+.yako-btn-primary:hover {
+  background-color: var(--dark-green);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(46, 139, 87, 0.4);
+  color: var(--white);
+}
+
+.yako-btn-secondary {
+  background-color: transparent;
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
+}
+
+.yako-btn-secondary:hover {
+  background-color: var(--light-green);
+  transform: translateY(-3px);
+}
+
+.yako-btn-rtl {
+  font-size: 0.9rem;
+}
+
+.yako-trusted-by {
+  margin-top: 40px;
+}
+
+.yako-trusted-by p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 15px;
+}
+
+.yako-partners-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.yako-partner-logo {
+  height: 30px;
+  width: auto;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.yako-partner-logo:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.yako-hero-images {
+  position: relative;
+  margin-top: 30px;
+}
+
+.yako-main-image {
+  width: 80%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 1;
+}
+
+.yako-main-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.yako-secondary-image {
+  position: absolute;
+  width: 50%;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  bottom: -30px;
+  right: 10%;
+  z-index: 2;
+  border: 4px solid var(--white);
+}
+
+.yako-secondary-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.yako-image-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: var(--white);
+  border-radius: 50px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: var(--shadow);
+  z-index: 3;
+}
+
+.badge-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+}
+
+.badge-icon i {
+  font-size: 1.2rem;
+}
+
+.badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--dark-green);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.badge-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .yako-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .yako-hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .yako-hero-images {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .yako-main-image {
+    width: 70%;
+  }
+  
+  .yako-secondary-image {
+    width: 40%;
+    right: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .yako-hero-section {
+    padding: 60px 0;
+  }
+  
+  .yako-hero-title {
+    font-size: 2rem;
+  }
+  
+  .yako-hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .yako-hero-content {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .yako-hero-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .yako-hero-buttons {
+    justify-content: center;
+  }
+  
+  .yako-trusted-by {
+    text-align: center;
+  }
+  
+  .yako-partners-list {
+    justify-content: center;
+  }
+  
+  .yako-main-image {
+    width: 80%;
+  }
+  
+  .yako-secondary-image {
+    width: 45%;
+    right: 5%;
+  }
+  
+  .yako-image-badge {
+    left: 10px;
+    bottom: 10px;
+    padding: 8px 15px;
+  }
+  
+  .badge-icon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .badge-icon i {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .yako-hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .yako-hero-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .yako-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .yako-main-image {
+    width: 90%;
+  }
+  
+  .yako-secondary-image {
+    width: 50%;
+    right: 0;
+  }
+  
+  .yako-partner-logo {
+    height: 25px;
+  }
 }

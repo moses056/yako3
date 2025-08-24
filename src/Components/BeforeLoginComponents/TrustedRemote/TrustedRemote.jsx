@@ -15,20 +15,20 @@ export default function TrustedRemote() {
                     <div className="col-md-1 col-3">
                         <hr className="w-75 mb-0 mt-3" id="Remote-professionals-lable-line-ID" />
                     </div>
-                    <div className="col fs-5 fw-bold">Remote professionals</div>
+                    <div className="col fs-5 fw-bold">Prestataires de confiance</div>
                 </div>
                 <div className="row mb-3" id="Trusted-remote-ID">
-                    <h1 className="fw-bolder">Trusted remote development and IT experts</h1>
+                    <h1 className="fw-bolder">Des services fiables, notés et vérifiés autour de vous</h1>
                 </div>
                 <div className="row mb-3" id="evaluation-ID">
                     <div className="col-lg-3 col-md-4 col-6 mb-3">
-                        <EvaluationCard headerTag={<i className="fas fa-star fs-5" />} header="4.91/5" content="Average client satisfaction on development and IT projects" />
+                        <EvaluationCard headerTag={<i className="fas fa-star fs-5" />} header="4.8/5" content="Note moyenne des prestataires locaux" />
                     </div>
                     <div className="col-lg-3 col-md-4 col-6 mb-3">
-                        <EvaluationCard header="211K+ contracts" content=" Development and IT work performed in the last year" />
+                         <EvaluationCard header="12K+" content="Missions réalisées le mois dernier" />
                     </div>
                     <div className="col-lg-3 col-md-4 mb-3">
-                        <EvaluationCard header="1,665 skills" content=" Represented across Upwork's pool of development and IT talent" />
+                           <EvaluationCard header="1,200+" content="Prestataires vérifiés disponibles" />
                     </div>
                 </div>
                 <div className="d-flex flex-lg-wrap flex-row flex-nowrap overflow-auto mx-1 mb-3" id="scrollable-experts-ID">
@@ -58,9 +58,9 @@ export default function TrustedRemote() {
                     </div>
                 </div>
                 <div className="d-flex fs-5 mb-5">
-                    Looking for something else?
+ Vous cherchez autre chose ?
                 <a href="#" className="text-decoration-none">
-                        Browse all skills <i className="fas fa-arrow-down" /></a>
+                          Parcourir tous les services <i className="fas fa-arrow-down" /></a>
                 </div>
             </div>
 

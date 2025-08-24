@@ -1,89 +1,299 @@
-.scrol-d-icon-cn {
-  color: #37a000;
+/* HomeSecondSection.css */
+:root {
+  --primary-green: #2e8b57;
+  --dark-green: #1a5c1a;
+  --light-green: #e6f7e6;
+  --accent-green: #4caf50;
+  --bg-light: #f9f9f9;
+  --text-dark: #333;
+  --text-light: #666;
+  --white: #ffffff;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-.ss-p-cn {
-  letter-spacing: 2.8px;
-  color: #656565;
+.yako-services-section {
+  padding: 80px 0;
+  background-color: var(--bg-light);
 }
-[dir ="rtl"] .ss-p-cn {
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.yako-section-header {
+  margin-bottom: 60px;
+}
+
+.yako-scroll-indicator {
+  font-size: 24px;
+  color: var(--accent-green);
+  margin-bottom: 20px;
+}
+
+.yako-section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2.8px;
+  color: var(--text-light);
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.yako-rtl-text {
   letter-spacing: normal;
 }
-.ss-h2-cn {
-  font-size: 60px;
-  line-height: 80px;
-  color: #1d4354;
-}
-[dir ="rtl"] .ss-h2-cn {
-  line-height:  40px;
+
+.yako-section-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--dark-green);
+  margin-bottom: 20px;
+  line-height: 1.2;
 }
 
-.ss-p2-cn {
+.yako-section-description {
   font-size: 18px;
-  line-height: 30px;
+  line-height: 1.6;
+  color: var(--text-light);
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-.ss-box-cn:hover {
-  background-color: #6fda44;
+.yako-services-cards {
+  margin-bottom: 40px;
 }
 
-.ss-box-cn:hover h3,
-.ss-box-cn:hover p {
-  color: white;
+.yako-service-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
-.ss-box-cn h3 {
-  color: #1d4354;
+.yako-service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
 }
 
-.ss-box-cn p {
-  color: #656565;
-  margin-top: 25px;
-  font-size: 18px;
-  line-height: 21px;
+.yako-card-link {
+  display: block;
+  padding: 30px;
+  text-decoration: none;
+  position: relative;
+  height: 100%;
 }
 
-.ss-box-cn div {
-  color: white;
-  background-color: #6fda44;
-  right: 0;
-  bottom: 0;
+.yako-card-icon {
+  width: 60px;
+  height: 60px;
+  background-color: var(--light-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--primary-green);
+  font-size: 24px;
+  transition: all 0.3s ease;
 }
 
-.ss-box-cn:hover div {
-  color: #6fda44;
-  background-color: white;
+.yako-service-card:hover .yako-card-icon {
+  background-color: var(--primary-green);
+  color: var(--white);
 }
 
-.ss-ul-a-cn {
-  font-size: 30px;
-  line-height: 60px;
-  color: #222;
-}
-[dir="rtl"] .ss-ul-a-cn
-{
-  font-size: 40px;
-}
-
-.ss-ul-a-cn:hover {
-  color: #6fda44;
-}
-
-.ss-span-a-cn {
-  opacity: 0.8;
-  color: #1d4354;
-  border: 1px solid #1d4354;
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 21px;
-  padding: 10px 15px;
-  border-radius: 25px;
-  display: inline-block;
+.yako-service-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-dark);
   margin-bottom: 10px;
+  transition: color 0.3s ease;
 }
 
-.ss-span-a-cn:hover {
+.yako-service-card p {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-bottom: 30px;
+  transition: color 0.3s ease;
+}
+
+.yako-service-card:hover h3,
+.yako-service-card:hover p {
+  color: var(--white);
+}
+
+.yako-card-arrow {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  transition: all 0.3s ease;
+}
+
+.yako-service-card:hover .yako-card-arrow {
+  background-color: var(--white);
+  color: var(--accent-green);
+}
+
+.yako-enterprise-cta {
+  margin-bottom: 60px;
+}
+
+.yako-enterprise-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.yako-enterprise-link {
+  color: var(--accent-green);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.yako-enterprise-link:hover {
+  color: var(--dark-green);
+  text-decoration: underline;
+}
+
+.yako-categories-section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.yako-categories-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.yako-category-link {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  padding: 10px 0;
+  transition: color 0.3s ease;
+}
+
+.yako-category-link:hover {
+  color: var(--accent-green);
+}
+
+.yako-category-link.yako-highlight {
+  color: var(--accent-green);
+}
+
+.yako-skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.yako-skill-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--white);
+  border: 1px solid var(--text-dark);
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.yako-skill-tag:hover {
   opacity: 1;
-  color: white;
-  background-color: #1d4354;
+  background-color: var(--dark-green);
+  color: var(--white);
+  border-color: var(--dark-green);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .yako-section-title {
+    font-size: 40px;
+  }
+  
+  .yako-service-card {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .yako-services-section {
+    padding: 60px 0;
+  }
+  
+  .yako-section-title {
+    font-size: 32px;
+  }
+  
+  .yako-section-description {
+    font-size: 16px;
+  }
+  
+  .yako-category-link {
+    font-size: 20px;
+  }
+  
+  .yako-skills-container {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .yako-section-title {
+    font-size: 28px;
+  }
+  
+  .yako-card-link {
+    padding: 20px;
+  }
+  
+  .yako-card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .yako-service-card h3 {
+    font-size: 18px;
+  }
+  
+  .yako-service-card p {
+    font-size: 14px;
+  }
+  
+  .yako-card-arrow {
+    width: 35px;
+    height: 35px;
+    right: 20px;
+    bottom: 20px;
+  }
+  
+  .yako-category-link {
+    font-size: 18px;
+  }
+  
+  .yako-enterprise-text {
+    font-size: 16px;
+  }
 }

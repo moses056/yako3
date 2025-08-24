@@ -10,26 +10,27 @@ export default function GetStarted() {
                         <div className="col-md-1 col-3">
                             <hr className="w-100 mb-0 mt-3" id="Remote-professionals-lable-line-ID" />
                         </div>
-                        <div className="col fs-5 fw-bold">How to get started</div>
+                        <div className="col fs-5 fw-bold">Comment ça marche ?</div>
                     </div>
                     <div className="row mb-3" id="get-started-header-ID">
                         <h1 className="fw-bolder">
-                            Tap into the world's largest talent network
+                                                       Trouvez ou proposez un petit boulot en quelques minutes
+
       </h1>
                     </div>
                     <div className="row mb-3" id="get-started-sub-header-ID">
-                        <h4 className="fw-bold">Find and hire specialized talent.</h4>
+                        <h4 className="fw-bold"> Des milliers de personnes près de chez vous prêtes à aider.</h4>
                     </div>
                     <div className="row mb-3 mx-1" id="get-started-list-ID">
                         <ul className="fs-6 ms-3">
-                            <li>Quickly generate a shortlist of qualified talent</li>
-                            <li>Browse rated and reviewed professionals</li>
-                            <li>Scale your teams up or down as business dynamics change</li>
+                     <li>Publiez ou trouvez un job en 2 clics</li>
+                            <li>Comparez les profils notés et vérifiés</li>
+                            <li>Paiement sécurisé après la mission</li>        
                         </ul>
                     </div>
                     <div className="row mb-3 mx-1" id="get-started-button-ID">
                         <button className="btn col-lg-6 col-12 mx-lg-0 mx-auto fw-bolder mb-3 bg-upwork" type="button">
-                            Connect with Talent
+                            Commencer maintenant
       </button>
                     </div>
                 </div>
@@ -37,7 +38,7 @@ export default function GetStarted() {
                     <video className="w-100" poster={talentMainSectionVideoPreviewDevIT} controls>
                         <source src={VID} type="video/mp4" />
                         <source src={VID} type="video/ogg" />
-      Your browser does not support the video tag.
+        Votre navigateur ne supporte pas la lecture vidéo.
     </video>
                 </div>
             </div>

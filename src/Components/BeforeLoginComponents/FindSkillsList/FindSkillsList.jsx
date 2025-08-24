@@ -5,14 +5,14 @@ export default function FindSkillsList() {
     return (
         <div>
             <ul className="list-group">
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">AngularJS Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">CSS Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">DevOps Engineers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Game Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Magento Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">React Native Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Scala Developers</a></li>
-                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Unity 3D Developers</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Ménage & Repassage</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Garde d’enfant</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Plomberie</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Électricité</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Jardinage</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Soutien scolaire</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Cuisine & Traiteur local</a></li>
+                <li className="list-group-item border-0 py-2"><a href="#" className="text-decoration-none">Livraison & Courses</a></li>
             </ul>
         </div>
     )

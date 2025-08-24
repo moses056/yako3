@@ -7,35 +7,38 @@ import { Link } from 'react-router-dom'
 
 export default function HeaderForDevItTalent() {
     return (
-        <div>
-            <section id="body-header-bg-ID" className="container-fluid pt-5 mt-5 pb-5 position-relative">
-                <div className="container pt-5 pb-lg-5">
-                    <div className="row d-flex justify-content-evenly mb-lg-5 pb-5 pt-5 me-3 ms-3" id="body-header-ID">
-                        <div className="col-xl-5 col-lg-6 position-relative col-12" id="header-text-ID">
-                            <h1 className="fw-bolder display-4 text-lg-start text-center">
-                                Specialized development and IT talent, for any scope.
+        <section className="hero-section">
+            <div className="hero-background">
+                <div className="container">
+                    <div className="hero-content">
+                        <div className="hero-text">
+                            <h1 className="hero-title">
+                                Bienvenue sur <span className="highlight">Yako</span>, 
+                                la plateforme qui connecte la jeunesse africaine aux opportunités.
                             </h1>
-                            <p className="fs-6 text-lg-start text-center col-lg-10 col-7 mx-lg-0 mx-auto mb-5">
-                                Get matched in minutes with proven, remote development and IT
-                                talent.
+                            <p className="hero-description">
+                                Que tu sois à la recherche d'un emploi, d'une mission freelance ou 
+                                d'un nouveau talent pour ton business, Yako est ton allié.  
+                                Ici, chaque profil compte. Chaque compétence a sa place.  
+                                Chaque rêve a une chance.
                             </p>
-                            <div className="row" id="header-buttons-ID">
-                                <Link  to="/login" className="btn col-lg-3 col-10 mx-lg-0 mx-auto fw-bolder me-lg-4 ms-lg-2 mb-3" type="button" id="header-btn-1">
-                                    Post a Job
+                            <div className="hero-buttons">
+                                <Link to="/login" className="btn btn-primary">
+                                    Trouver un emploi
                                 </Link>
-                                <button className="btn col-lg-5 col-10 mx-lg-0 mx-auto fw-bolder mb-3" type="button" id="header-btn-2">
-                                    Talk to a Recruiter
+                                <button className="btn btn-secondary">
+                                    Publier une offre d'emploi
                                 </button>
                             </div>
                         </div>
-                        <div className="col-xl-5 col-lg-4" id="header-images-ID">
-                            <img src={talentHeaderDevIT} id="header-man-ID" className="rounded mx-auto d-lg-block position-relative d-none" width={320} alt='' />
-                            <img src={talentHeaderBgSvg1DevIT} id="header-svg-1-ID" className="position-absolute" alt='' />
-                            <img src={talentHeaderBgSvg2DevIT} id="header-svg-2-ID" className="position-absolute" alt='' />
+                        <div className="hero-image-container">
+                            <img src={talentHeaderDevIT} className="hero-image" alt="Talent professionnel" />
+                            <img src={talentHeaderBgSvg1DevIT} className="hero-bg-svg svg-1" alt="" />
+                            <img src={talentHeaderBgSvg2DevIT} className="hero-bg-svg svg-2" alt="" />
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
     )
 }

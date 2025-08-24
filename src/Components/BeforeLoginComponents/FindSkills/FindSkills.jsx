@@ -11,11 +11,11 @@ export default function FindSkills() {
           </div>
         </div>
         <div className="row mb-3" id="find-skills-header-ID">
-          <h1 className="fw-bolder">Find any skill or service to achieve your goals</h1>
+          <h1 className="fw-bolder"> Trouve le service qu’il te faut, facilement et rapidement</h1>
         </div>
         <div className="row small">
           <div className="row my-3" id="find-skills-sub-header-ID">
-            <h4 className="fw-bold">Development &amp; IT Roles</h4>
+            <h4 className="fw-bold">Services à domicile</h4>
           </div>
           <div className="col-lg-3 col-md-6 col-12 mb-5">
             <FindSkillsList />
@@ -30,7 +30,7 @@ export default function FindSkills() {
             <FindSkillsList />
           </div>
           <div className="row my-3" id="find-skills-sub-header-ID">
-            <h4 className="fw-bold">Cross-functional roles</h4>
+            <h4 className="fw-bold">Petits travaux & Dépannages</h4>
           </div>
           <div className="col-lg-3 col-md-6 col-12 mb-5">
             <FindSkillsList />
@@ -45,7 +45,7 @@ export default function FindSkills() {
             <FindSkillsList />
           </div>
           <div className="row my-3" id="find-skills-sub-header-ID">
-            <h4 className="fw-bold">Projects</h4>
+            <h4 className="fw-bold">Services rapides</h4>
           </div>
           <div className="col-lg-3 col-md-6 col-12 mb-5">
             <FindSkillsList />
